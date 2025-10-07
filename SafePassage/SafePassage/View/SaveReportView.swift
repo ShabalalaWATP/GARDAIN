@@ -6,11 +6,13 @@
 //
 
 import SwiftUI
+internal import _LocationEssentials
 
 struct SaveReportView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var reportsService: ReportsService
     @EnvironmentObject private var storageService: StorageService
+    @ObservedObject var locationViewModel = LocationViewModel()
     
     @State private var name = ""
     @State private var description = ""
@@ -28,9 +30,17 @@ struct SaveReportView: View {
             Section("Picture") {
                 PicturePicker(selectedData: $image)
             }
-                            
+            Section("Location") {
+                LocationView()
+            }
             Button("Save Report") {
                 let imageName = image != nil ? UUID().uuidString : nil
+                if let location = locationViewModel.userLocation {
+                    lat = location.latitude
+                    lon = location.longitude
+                } else {
+                    print("Location not available.")
+                }
                 let report = Report(
                     id: UUID().uuidString,
                     name: name,
