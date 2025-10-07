@@ -1,0 +1,13 @@
+{
+    "AppSyncApiName": "safepassage",
+    "DynamoDBBillingMode": "PAY_PER_REQUEST",
+    "DynamoDBEnableServerSideEncryption": false,
+    "AuthCognitoUserPoolId": {
+        "Fn::GetAtt": [
+            "authsafepassage9e47cc53",
+            "Outputs.UserPoolId"
+        ]
+    },
+    "S3DeploymentBucket": "amplify-safepassage-dev-85334-deployment",
+    "S3DeploymentRootKey": "amplify-appsync-files/27cf4200af0b52aaab1614e64c18cc9127d8b73f"
+}

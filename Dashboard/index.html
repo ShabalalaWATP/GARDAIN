@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>neo-dashboard</title>
+
+    <!-- MapLibre CSS (CDN) -->
+    <link href="https://unpkg.com/maplibre-gl@3.x/dist/maplibre-gl.css" rel="stylesheet" />
+
+    <style>
+      /* ensure app and map can fill the viewport */
+      body { margin: 0; }
+      #root { height: 100vh; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <!-- MapLibre JS (CDN) - load before your React bundle so window.maplibregl is ready -->
+    <script src="https://unpkg.com/maplibre-gl@3.x/dist/maplibre-gl.js"></script>
+
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

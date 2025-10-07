@@ -1,0 +1,11 @@
+{
+  "AppSyncApiName": "safepassage",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false,
+  "AuthCognitoUserPoolId": {
+    "Fn::GetAtt": [
+      "authsafepassage9e47cc53",
+      "Outputs.UserPoolId"
+    ]
+  }
+}

@@ -1,0 +1,70 @@
+{
+    "UserAgent": "aws-amplify/cli",
+    "Version": "0.1.0",
+    "IdentityManager": {
+        "Default": {}
+    },
+    "CredentialsProvider": {
+        "CognitoIdentity": {
+            "Default": {
+                "PoolId": "eu-west-2:6c89a70d-2436-4da2-996a-2e77f8abbfaf",
+                "Region": "eu-west-2"
+            }
+        }
+    },
+    "CognitoUserPool": {
+        "Default": {
+            "PoolId": "eu-west-2_gOyUy4eiO",
+            "AppClientId": "4psotld5aj9ugh9he4bck1ubva",
+            "Region": "eu-west-2"
+        }
+    },
+    "Auth": {
+        "Default": {
+            "OAuth": {
+                "WebDomain": "safepassage9e47cc53-9e47cc53-dev.auth.eu-west-2.amazoncognito.com",
+                "AppClientId": "4psotld5aj9ugh9he4bck1ubva",
+                "SignInRedirectURI": "safepassage://",
+                "SignOutRedirectURI": "safepassage://",
+                "Scopes": [
+                    "phone",
+                    "email",
+                    "openid",
+                    "profile",
+                    "aws.cognito.signin.user.admin"
+                ]
+            },
+            "authenticationFlowType": "USER_SRP_AUTH",
+            "socialProviders": [],
+            "usernameAttributes": [],
+            "signupAttributes": [
+                "EMAIL"
+            ],
+            "passwordProtectionSettings": {
+                "passwordPolicyMinLength": 8,
+                "passwordPolicyCharacters": []
+            },
+            "mfaConfiguration": "OFF",
+            "mfaTypes": [
+                "SMS"
+            ],
+            "verificationMechanisms": [
+                "EMAIL"
+            ]
+        }
+    },
+    "AppSync": {
+        "Default": {
+            "ApiUrl": "https://ooc23v2f4bdbnmqr4zdtwm7fbe.appsync-api.eu-west-2.amazonaws.com/graphql",
+            "Region": "eu-west-2",
+            "AuthMode": "AMAZON_COGNITO_USER_POOLS",
+            "ClientDatabasePrefix": "safepassage_AMAZON_COGNITO_USER_POOLS"
+        }
+    },
+    "S3TransferUtility": {
+        "Default": {
+            "Bucket": "safepassaged518a3005b05402eaf78c2b888e55d2285334-dev",
+            "Region": "eu-west-2"
+        }
+    }
+}
