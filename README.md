@@ -1,24 +1,24 @@
 # SafePassage
 
-A real-time hazard reporting and mapping system built for emergency response scenarios. SafePassage combines a native iOS app for field reporting with a web dashboard for command centre monitoring.
+A real-time hazard reporting and mapping system built for emergency response scenarios. SafePassage combines a native iOS app for field reporting with a react based web dashboard for command centre monitoring.
 
 ## What We Built
 
-During a 48-hour hackathon, we created a two-part system to help coordinate safety during crisis situations:
+During a 48-hour hackathon, we've created two seperate apps one aimed at Commanders and one aimed at eligible citizens to help coordinate safety during crisis situations:
 
-**SafePassage iOS App** - Field personnel use this to report hazards, take photos, and mark locations requiring evacuation. Everything syncs instantly to the cloud.
+**SafePassage iOS App** - Field personnel use this to request NEO evacuation, report hazards, take photos, and mark locations requiring evacuation. Everything syncs instantly to the cloud.
 
-**NEO Dashboard** - Command centres see all reports on an interactive map with hazard zones displayed as coloured polygons and individual reports as markers.
+**NEO Dashboard** - Command centres see all reports on an interactive map with hazard zones displayed as coloured polygons and individual reports as markers. Eventually info from the SafePassage app will display on the dashboard.
 
-The name "NEO" stands for Non-Combatant Evacuation Operation - military speak for getting civilians out of danger zones quickly and safely.
+The name "NEO" stands for Non-Combatant Evacuation Operation - This is the military term for getting civilians out of danger zones quickly and safely.
 
 ## The Stack
 
-We leveraged AWS services to build something robust in a short time:
+We've leveraged AWS services to build something robust in a short time:
 
 - **iOS App**: SwiftUI + AWS Amplify
 - **Web Dashboard**: React + Vite + MapLibre GL
-- **Backend**: AWS Cognito (auth), AppSync (GraphQL API), S3 (storage), Location Service (maps)
+- **Backend**: AWS Amplify, AWS Cognito (auth), AppSync (GraphQL API), S3 (storage), Location Service (maps)
 
 Everything talks to each other through AWS AppSync's GraphQL API with real-time subscriptions for instant updates.
 
@@ -53,7 +53,7 @@ Open `http://localhost:5173` in your browser. Check the Dashboard folder for mor
 4. The web dashboard fetches this data and displays it on an AWS Location Service map
 5. Command staff see hazard zones (polygons) and individual reports (markers) in real-time
 
-Authorization rules ensure users only see their own reports - we built this for a demo, so we kept the security model simple.
+Authorisation rules ensure users only see their own reports - we built this for a demo, so we kept the security model simple.
 
 ## What's Next
 
