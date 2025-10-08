@@ -1,5 +1,7 @@
-import MapLibreMap from "./components/MapLibreMap";
-import "./App.css";
+import { useRef } from 'react';
+import MapLibreMap from './components/MapLibreMap';
+import PinDataFetcher from './components/PinDataFetcher';
+import './App.css';
 
 function App() {
   const contactDirectory = [
@@ -99,12 +101,24 @@ function App() {
   const geoJsonUrl =
     import.meta.env.VITE_GEOJSON_URL ||
     "https://zones-of-interest.s3.eu-west-2.amazonaws.com/hazard_zones.json";
+  
+  const pinJsonUrl = "https://ksip4rkha0.execute-api.eu-west-2.amazonaws.com/entitled-persons";
+  const mapRef = useRef(null);
 
   const renderDashboard = () => (
     <>
       <section className="map-panel">
         <div className="map-card">
-          <MapLibreMap apiKey={apiKey} geoJsonUrl={geoJsonUrl} height="100%" />
+          <MapLibreMap 
+        apiKey={apiKey} 
+        geoJsonUrl={geoJsonUrl} 
+        height="100%"
+        mapRef={mapRef}
+      />
+      <PinDataFetcher 
+        pinJsonUrl={pinJsonUrl}
+        mapRef={mapRef}
+      />
         </div>
         <div className="map-footnote">
           <span className="status-indicator">Live Feed</span>
