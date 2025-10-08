@@ -3,6 +3,9 @@ import './App.css';
 
 function App() {
   const apiKey = import.meta.env.VITE_AWS_LOCATION_KEY;
+  const geoJsonUrl =
+    import.meta.env.VITE_GEOJSON_URL ||
+    "https://zones-of-interest.s3.eu-west-2.amazonaws.com/hazard_zones.json";
 
   if (!apiKey) {
     return (
@@ -14,7 +17,7 @@ function App() {
 
   return (
     <div className="map-page">
-      <MapLibreMap apiKey={apiKey} height="100%" />
+      <MapLibreMap apiKey={apiKey} geoJsonUrl={geoJsonUrl} height="100%" />
     </div>
   );
 }
