@@ -1,15 +1,17 @@
 # GARDIAN SafePassage System
 
-Coordinated reporting and situational awareness for Non-Combatant Evacuation Operations (NEO).
+GARDIAN stands for Geospatial Aid Response & Disaster Information Analysis Network
+
+The system is used to coordinate reporting and situational awareness for Non-Combatant Evacuation Operations (NEO) and disaster relief operations.
 
 ![GARDIAN Dashboard Overview](Dashboard/image-1.png)
 
-The GARDIAN Safe Passage Platform brings together the SafePassage iOS app used by evacuees and field teams with the GARDIAN real-time REACT dashboard web-app monitored by command posts. Data captured on mobile flows through AWS services to populate the live map, intelligence panels, and messaging tools that power decision-making during crisis response. The solution was built during a 48-hour hackathon and lays the groundwork for a production-ready evacuation management suite.
+The GARDIAN Safe Passage System is essentialls two seperate apps, it brings together the SafePassage iOS app used by evacuees and field teams with the GARDIAN real-time REACT dashboard web-app monitored by command posts. Data captured on mobile flows through AWS services to populate the live map, intelligence panels, and messaging tools that power decision-making during crisis response. The solution was built during a 48-hour hackathon and lays the groundwork for a production-ready NEO/Disaster Relief management suite for the Military and FCDO Commanders.
 
 ## Platform Overview
-- Field operators capture hazard reports, imagery, and evacuation priorities directly from the incident zone.
-- AWS Amplify, AppSync, Cognito, and S3 synchronise structured data and media into shared mission datasets.
-- The GARDIAN Dashboard renders hazard overlays, entitled-person locations, and curated intelligence as a single operational view.
+- Citizens with the SafePassage iOS application can report their location, status, send in images, request evacuation and more.
+- AWS Amplify, AppSync, Lambda, GraphQL, Cognito, and S3 synchronise structured data and media into shared mission datasets.
+- The GARDIAN Dashboard renders hazard overlays, entitled-person locations, and curated intelligence as a single operational view for the Military/FCDO Commanders.
 - Messaging and planned automations close the loop between command guidance and citizens awaiting extraction.
 
 ## Component Highlights
