@@ -16,7 +16,7 @@ The name "NEO" stands for Non-Combatant Evacuation Operation - This is the milit
 
 We've leveraged AWS services to build something robust in a short time:
 
-- **iOS App**: SwiftUI + AWS Amplify
+- **iOS App**: SwiftUI + AWS Amplify Gen 1 for Auth, Data and Storage. Stretch target of using Geo
 - **Web Dashboard**: React + Vite + MapLibre GL
 - **Backend**: AWS Amplify, AWS Cognito (auth), AppSync (GraphQL API), S3 (storage), Location Service (maps)
 
@@ -26,13 +26,13 @@ Everything talks to each other through AWS AppSync's GraphQL API with real-time 
 
 ### iOS App
 
-```bash
-cd SafePassage
-pod install
-open SafePassage.xcworkspace
-```
 
-Configure your `amplifyconfiguration.json`, then build and run in Xcode. See the SafePassage folder for detailed setup instructions.
+SafePassage (feature set for a GOV.UK app aimed at British citizens)
+Xcode 26 / macOS 26 and iOS 26 (also builds for iPadOS 26)
+SafePassage
+
+Configure on macOS: Xcode, git, Node.js, npm.
+
 
 ### Dashboard
 
@@ -88,3 +88,4 @@ Built by Team 3 during the 2025 hackathon!
 ## Licence
 
 MIT - Use this however you like. 
+
