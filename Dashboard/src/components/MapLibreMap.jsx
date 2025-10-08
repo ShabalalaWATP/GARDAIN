@@ -44,7 +44,7 @@ export default function MapLibreMap({
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
-
+    // Initialises the map
     const map = new maplibregl.Map({
       container: mapContainerRef.current,
       style: `https://maps.geo.${region}.amazonaws.com/v2/styles/${styleName}/descriptor?key=${apiKey}&color-scheme=${colorScheme}`,
@@ -52,11 +52,34 @@ export default function MapLibreMap({
       zoom,
     });
 
+    map.on("load", () => {
+      map.resize();
+    });
+
+    const handleWindowResize = () => {
+      map.resize();
+    };
+
+    window.addEventListener("resize", handleWindowResize);
+
+    let resizeObserver;
+    if (typeof ResizeObserver !== "undefined") {
+      resizeObserver = new ResizeObserver(() => {
+        map.resize();
+      });
+      resizeObserver.observe(mapContainerRef.current);
+    }
+
+    // Adds zoom and rotation controls to the map.
     map.addControl(new maplibregl.NavigationControl(), "top-left");
     mapRef.current = map;
 
     return () => {
       mapRef.current = null;
+      window.removeEventListener("resize", handleWindowResize);
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
       map.remove();
     };
   }, [apiKey, region, styleName, colorScheme, center, zoom]);
@@ -76,7 +99,6 @@ export default function MapLibreMap({
     // Function that fetches the GeoJSON and adds it to the map
     const addGeoJsonToMap = async () => {
       try {
-
         // Fetches the GeoJSON file from the provided URL
         const response = await fetch(geoJsonUrl, {
           signal: abortController.signal,
@@ -135,6 +157,8 @@ export default function MapLibreMap({
             "circle-stroke-width": 2,
           },
         });
+
+        map.resize();
 
         // Fit the map view
         const bounds = computeBoundsFromGeoJson(geojson);
