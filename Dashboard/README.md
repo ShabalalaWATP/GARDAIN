@@ -77,75 +77,6 @@ Provide the following environment variables in a `.env` file at the root of the 
 
 The entitled-person feed and messaging endpoints are currently hard-coded for the Hackathon environment. For productionisation, promote both URLs into env vars (e.g. `VITE_PIN_DATA_URL`, `VITE_MESSAGING_URL`) so deployments can target staging or live APIs without code changes.
 
-## Data Contracts
-
-### Hazard GeoJSON (`VITE_GEOJSON_URL`)
-
-```json
-{
-  "type": "FeatureCollection",
-  "features": [
-    {
-      "type": "Feature",
-      "properties": {
-        "color": "#4F46E5"     // optional fill colour
-      },
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [[[lng, lat], ...]]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "color": "#DC2626"     // optional marker colour
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [lng, lat]
-      }
-    }
-  ]
-}
-```
-
-The map will automatically add fill, outline, and point layers, falling back to default colours if none are supplied.
-
-### Entitled-person feed
-
-`PinDataFetcher` expects a JSON array where each entry includes location and contextual metadata:
-
-```json
-[
-  {
-    "id": "string",               // unique identifier
-    "name": "string",
-    "description": "string",
-    "latitude": 34.1234,
-    "longitude": 69.1234,
-    "to_evacuate": true,
-    "timestamp": "2025-10-08T11:45:00Z"
-  }
-]
-```
-
-Boolean values for `to_evacuate` allow the statistics banner to split totals accurately, while the popup still tolerates `"true"`/`"false"` string values. Additional properties are preserved and rendered where available.
-
-### Messaging payload
-
-When an operator sends a message from the popup, the application POSTs to the messaging router with:
-
-```json
-{
-  "message": "Operator instruction text",
-  "id": "linked entitled-person ID",
-  "name": "linked entitled-person name",
-  "timestamp": "ISO8601 dispatch time"
-}
-```
-
-Ensure receiving services can accept this contract or adjust the handler accordingly.
-
 ## Development Workflow
 
 ```bash
@@ -154,7 +85,7 @@ npm run dev      # start Vite dev server (default: http://localhost:5173)
 npm run lint     # run ESLint (React Hooks + Refresh plugins)
 ```
 
-While the UI labels advertise a 90-second refresh, the current implementation fetches data on initial load only. Configure polling or webhooks before relying on the indicator in live operations.
+While the UI labels advertise a 90 second refresh, the current implementation fetches data on initial load only. Configure polling or webhooks before relying on the indicator in live operations.
 
 ## Production Build
 
@@ -165,11 +96,15 @@ npm run preview  # locally serve the production bundle
 
 The build outputs static assets suitable for deployment to AWS Amplify, S3 + CloudFront, or any modern static host. Ensure environment variables are set during build time so Vite can inline the correct API endpoints.
 
-## Operational Notes
+## Future Features
 
-- **Screenshots and demos**: Capture an updated dashboard screenshot (map, stats, and news panels visible) for stakeholder packs and include it in future README revisions.
-- **Manual overlays**: `ManualPinManager` is scaffolded but not yet mounted. Activating it will let operators drop colour-coded markers locally; consider enabling it once UX testing is complete.
-- **Future integrations**: Weather and evacuation queue sections are placeholders awaiting upstream services. Keep their copy up to date so readers know which feeds are pending.
+- **Ability to drop Pins, Polygons, Other Shapes Manually**: Currentley the operator of the Dashboard cannot add these features manually on the dashboard they are fed in from AWS, it's a high priority to allow them to do this.
+- **Real time Weather and News Feed with LLM analysis**: We'd like to connect GNews, Guardian and GDELT API's to automatically pull in real news stories based on the region the map is centred on, firther on from this it would include LLM analysis and summaries. The same goes with online weather reports.
+- **Fully functioning Eligible Citizens Table**: The site features a blank space where a list of people on the map would appear, we would look to automatically have this feed from the map into the Dashboard list.
+- **Real time tracking**: Currentley the user sends their position once and that's it, we would look to actually implement AWS Real time tracking to enable us to track the user if they give permission locally.
+- **Greater Accesibility**: The site is easy to view and navigate, however could benefit from a light mode, testing to see if it's suitable for screen readers, the ability to interact using voice, potentially using OpenAI realtime voice/vision services. Support for other languages to enable future.
+- **Offline Mode**: The ability to utilise the application disconnected, you could save things locally and set it to send automatically to the backend once re-connected.
+
 
 ## Troubleshooting
 
