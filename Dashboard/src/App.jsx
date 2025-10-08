@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import MapLibreMap from './components/MapLibreMap';
 import PinDataFetcher from './components/PinDataFetcher';
 import topRightLogo from './assets/logos/GARDIAN.jpg';
@@ -10,6 +10,33 @@ import PhotoIntel from './components/PhotoIntel';
 import './App.css';
 
 function App() {
+  const getPreferredTheme = () => {
+    if (typeof window === "undefined") {
+      return "dark";
+    }
+    const stored = window.localStorage.getItem("gardian-theme");
+    if (stored === "light" || stored === "dark") {
+      return stored;
+    }
+    const prefersLight = window.matchMedia?.("(prefers-color-scheme: light)")?.matches;
+    return prefersLight ? "light" : "dark";
+  };
+
+  const [theme, setTheme] = useState(getPreferredTheme);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    window.localStorage.setItem("gardian-theme", theme);
+    document.documentElement.setAttribute("data-app-theme", theme);
+    document.documentElement.style.colorScheme = theme === "dark" ? "dark" : "light";
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((previous) => (previous === "dark" ? "light" : "dark"));
+  };
+
   const contactDirectory = [
     {
       name: "PJHQ Watchkeeper",
@@ -250,7 +277,7 @@ function App() {
   );
 
   return (
-    <div className="map-page">
+    <div className="map-page" data-theme={theme}>
       <header className="dashboard-header">
         <div className="header-content">
           <div className="header-text">
@@ -265,6 +292,18 @@ function App() {
             </div>
           </div>
           <div className="header-actions">
+            <button
+              type="button"
+              className="theme-toggle"
+              onClick={toggleTheme}
+              aria-label={`Activate ${theme === "dark" ? "light" : "dark"} mode`}
+              aria-pressed={theme === "light"}
+            >
+              <span className="theme-toggle__icon" aria-hidden="true">
+                {theme === "dark" ? "☀️" : "🌙"}
+              </span>
+              <span>{theme === "dark" ? "Light" : "Dark"} Mode</span>
+            </button>
             <div className="header-logo" aria-hidden="true">
               <img className="header-logo__primary" src={topRightLogo} alt="GARDIAN crest" />
             </div>
