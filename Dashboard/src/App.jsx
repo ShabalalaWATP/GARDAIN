@@ -4,6 +4,7 @@ import PinDataFetcher from './components/PinDataFetcher';
 import topRightLogo from './assets/logos/GARDIAN.jpg';
 import ukGovLogo from './assets/logos/UKGovLogo.jpg';
 import ukMilLogo from './assets/logos/UKMilLogo.jpg';
+import NewsFeed from './components/NewsFeed';
 import './App.css';
 
 function App() {
@@ -138,10 +139,7 @@ function App() {
       <section className="intel-panel">
         <div className="intel-content">
           <h2>Local News Reports</h2>
-          <p>
-            Reserve this space for JDP-aligned local news briefings, situational updates,
-            and evacuation advisories gathered from on-the-ground teams.
-          </p>
+          <NewsFeed />
         </div>
       </section>
 

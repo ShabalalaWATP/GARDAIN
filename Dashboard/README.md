@@ -1,240 +1,118 @@
-# NEO Dashboard
+# GARDIAN Dashboard
 
-A real time hazard mapping dashboard built with React and AWS Location Service. This web application visualises safety reports and hazard zones on an interactive map, helping commanders stay informed about activities on the ground.
+GARDIAN (Geospatial Aid Response & Disaster Information Analysis Network) is a real-time operational dashboard that fuses hazard zoning, entitled-person tracking, and live intelligence to support Non-combatant Evacuation Operations (NEO). The dashboard is built with React and MapLibre on top of AWS Location Service, giving commanders a tailored tactical picture for theatre planning and response.
 
-## What This App Does
+## Overview
 
-The NEO Dashboard app is the web interface for viewing hazard reports/NEO evacuation requests/AWS Mapping Features. It displays:
-- **Hazard zones** as colored polygons showing areas to avoid
-- **Individual reports** as point markers with severity indicators
-- **Interactive map controls** for zooming and panning
-- **Real-time data** fetched from AWS S3 storage
+The web application delivers a single pane of glass for mission staff:
+- Visualises AWS-hosted hazard polygons and point features with responsive map styling.
+- Streams entitled-person location data and presents at-a-glance evacuation statistics.
+- Surfaces curated local news, liaison contacts, and doctrine references for rapid decision support.
+- Provides in-map messaging to push instructions back to individual evacuees.
 
-Think of it as a community safety map that updates with new reports from users in the field.
+## Key Capabilities
 
-## Tech Stack
+- **Live hazard overlays**: `MapLibreMap` initialises AWS Location Service tiles, fetches GeoJSON zones from S3 (or a configured endpoint), and auto-fits the viewport to show every feature while preserving custom colours.
+- **Entitled-person feed**: `PinDataFetcher` polls the entitled-persons API, renders pins with severity colouring, and powers an interactive popup allowing operators to send a message via the messaging router. `PinStatistics` then summarises totals vs. outstanding evacuations.
+- **Intel and coordination panels**: The intelligence, weather, requests, contacts, and doctrine sections in `App.jsx` show which data sources are already connected (news feed) and where placeholders remain for upcoming integrations.
+- **Shared map context**: A single `mapRef` is passed from `App` into both the base map and pin overlay to ensure layers stay in sync and can be extended by additional controllers such as the optional `ManualPinManager`.
+- **Operational styling**: Rich UI treatments in `App.css` deliver a polished command-centre look while keeping critical data readable in low-light environments.
 
-We chose modern, performant tools that work well with AWS services:
+## Architecture Overview
 
-- **React 18** - For building the interactive UI
-- **Vite** - Lightning-fast dev server and optimized builds
-- **MapLibre GL** - Open-source map rendering engine
-- **AWS Location Service** - Provides map tiles and geocoding capabilities
+| Data source / service | Origin | Consumed by | Purpose |
+| --- | --- | --- | --- |
+| AWS Location Service tiles | AWS Location (Region: `eu-west-2`) | `src/components/MapLibreMap.jsx` | Base map styling, navigation controls, light/dark palette support. |
+| Hazard GeoJSON | Configurable S3 bucket (`VITE_GEOJSON_URL`) with polygon and point features | `MapLibreMap` | Draws hazard zones, outlines, and ad-hoc point markers; fits map bounds. |
+| Entitled-person API | `https://ksip4rkha0.execute-api.eu-west-2.amazonaws.com/entitled-persons` | `src/components/PinDataFetcher.jsx` | Supplies evacuee pin data and metadata for popups & statistics. |
+| Messaging router | `https://ksip4rkha0.execute-api.eu-west-2.amazonaws.com/messaging-router` | `PinDataFetcher` -> `InteractivePopup` | Sends operator-authored messages back to selected evacuees. |
+| News feed | `VITE_NEWS_FEED_URL` (defaults to the Hackathon feed) | `src/components/NewsFeed.jsx` | Displays rolling open-source intelligence summaries. |
+| Manual overlays (planned) | Operator input | `src/components/ManualPinManager.jsx` | Enables drag-to-drop manual markers when mounted (feature scaffolding present). |
 
-## Getting Started
+The main React tree lives in `src/App.jsx`. It wires the shared `mapRef` into `MapLibreMap` and `PinDataFetcher`, then composes the supporting panels. Layout, colour treatments, and responsive behaviour are handled in `src/App.css`.
 
-### Prerequisites
+### Component Topology
 
-You'll need Node.js installed on your machine. We recommend version 18 or higher (LTS).
+![alt text](image.png)
 
-Check your Node version:
-```bash
-node --version
+App
+|-- MapLibreMap (MapLibre + AWS Location)
+|-- PinDataFetcher
+|   |-- InteractivePopup (message dispatch)
+|   |-- PinStatistics (floating summary)
+|-- NewsFeed
+|-- [ManualPinManager] (ready for activation)
+`-- Auxiliary panels (weather, requests, contacts, doctrine)
 ```
-
-If you need to install or update Node, grab it from [nodejs.org](https://nodejs.org/).
-
-### Installation
-
-Clone the repository and navigate to the Dashboard folder:
-
-```bash
-git clone https://github.com/your-org/hackathon-2025-team-3.git
-cd hackathon-2025-team-3/Dashboard
-```
-
-Install the dependencies:
-
-```bash
-npm install
-```
-
-### Configuration
-
-Create a `.env` file in the Dashboard directory with your AWS Location Service API key:
-
-```bash
-VITE_AWS_LOCATION_KEY=your-api-key-here
-```
-
-Optionally, you can also specify a custom GeoJSON URL:
-
-```bash
-VITE_GEOJSON_URL=https://your-bucket.s3.region.amazonaws.com/your-data.json
-```
-
-If you don't set `VITE_GEOJSON_URL`, the app defaults to our demo data.
-
-### Running Locally
-
-Start the development server:
-
-```bash
-npm run dev
-```
-
-Vite will start the server and show you the local URL (usually `http://localhost:5173`). Open it in your browser and you should see the map!
-
-The dev server has hot module replacement, so any changes you make to the code will instantly appear in the browser without refreshing.
-
-## How We Built It
-
-### Setting Up React with Vite
-
-We used Vite to bootstrap the React project because it's incredibly fast and has great developer experience. The setup was straightforward:
-
-```bash
-npm create vite@latest Dashboard -- --template react
-```
-
-This gave us a clean React project with modern tooling out of the box.
-
-### Connecting to AWS Services
-
-The dashboard integrates with AWS Location Service for map rendering. We configured it to:
-- Fetch map tiles from AWS's Standard style
-- Support both Light and Dark color schemes
-- Use the `eu-west-2` region (London) for low latency
-
-The connection happens through the MapLibre GL library, which communicates directly with AWS Location Service's API.
-
-### Adding the Interactive Map
-
-We created a custom `MapLibreMap` component that wraps MapLibre GL functionality. This component:
-
-1. **Initializes the map** with AWS Location Service styling
-2. **Adds navigation controls** for zooming and rotating
-3. **Fetches GeoJSON data** from S3 when the map loads
-4. **Renders the features** as layers on the map
-
-The map configuration is flexible - you can change the center point, zoom level, and even the map style through props.
-
-### Rendering Polygons
-
-Hazard zones come from a GeoJSON file stored in S3. When the map loads, we:
-
-1. Fetch the GeoJSON data
-2. Add it as a data source to the map
-3. Create two layers:
-   - A fill layer (semi-transparent colored areas)
-   - A line layer (solid borders around each zone)
-
-Each polygon can have custom colors defined in its properties. If no color is specified, we use a default indigo shade.
-
-The code handles this in the `addGeoJsonToMap` function:
-
-```javascript
-map.addLayer({
-  id: 'polygon-fill',
-  type: 'fill',
-  source: sourceId,
-  filter: ['==', '$type', 'Polygon'],
-  paint: {
-    'fill-color': ['coalesce', ['get', 'color'], '#4F46E5'],
-    'fill-opacity': 0.3,
-  },
-});
-```
-
-### Displaying Point Markers
-
-Individual hazard reports appear as circular markers. We style them with:
-- Custom radius (6px)
-- Color based on the feature properties (defaults to red)
-- White stroke border for visibility against any background
-
-The map automatically fits the bounds to show all features when data loads, so you never have to manually pan around looking for markers.
 
 ## Project Structure
 
-Here's how the Dashboard code is organized:
-
 ```
 Dashboard/
-├── src/
-│   ├── components/
-│   │   └── MapLibreMap.jsx    # Main map component
-│   ├── App.jsx                # Root component & config
-│   ├── App.css                # App-level styles
-│   ├── main.jsx               # React entry point
-│   └── index.css              # Global styles
-├── public/                    # Static assets
-├── index.html                 # HTML template
-├── vite.config.js             # Vite configuration
-├── package.json               # Dependencies & scripts
-└── .env                       # Environment variables (gitignored)
+├─ public/                 # Static assets served by Vite
+├─ src/
+│  ├─ App.jsx              # Root layout and section composition
+│  ├─ App.css              # Navigation, panels, and HUD styling
+│  ├─ components/
+│  │  ├─ MapLibreMap.jsx   # Map initialisation, hazard overlays
+│  │  ├─ PinDataFetcher.jsx# Entitled-person feed & messaging
+│  │  ├─ PinStatistics.jsx # Fixed-position statistics banner
+│  │  ├─ NewsFeed.jsx      # OSS news ingestion & rendering
+│  │  └─ ManualPinManager.jsx # Optional manual overlay controls
+│  ├─ assets/              # Logos and illustrations
+│  └─ main.jsx             # React entry point
+├─ vite.config.js          # Vite + React configuration
+├─ package.json            # Scripts and dependencies
+└─ dist/                   # Production build artefacts (`npm run build`)
 ```
 
-## Available Scripts
+## Configuration
 
-### Development
+Provide the following environment variables in a `.env` file at the root of the Dashboard project:
+
+| Variable | Purpose | Default |
+| --- | --- | --- |
+| `VITE_AWS_LOCATION_KEY` | AWS Location Service API key used by MapLibre for tile requests. | _None (required)_ |
+| `VITE_GEOJSON_URL` | Remote GeoJSON (FeatureCollection) describing polygons/points to render. | `https://zones-of-interest.s3.eu-west-2.amazonaws.com/hazard_zones.json` |
+| `VITE_NEWS_FEED_URL` | Optional override for the news feed endpoint. | `https://oqwz797yb0.execute-api.eu-west-2.amazonaws.com/prod/news` |
+
+The entitled-person feed and messaging endpoints are currently hard-coded for the Hackathon environment. For productionisation, promote both URLs into env vars (e.g. `VITE_PIN_DATA_URL`, `VITE_MESSAGING_URL`) so deployments can target staging or live APIs without code changes.
+
+## Development Workflow
 
 ```bash
-npm run dev
+npm install      # install dependencies
+npm run dev      # start Vite dev server (default: http://localhost:5173)
+npm run lint     # run ESLint (React Hooks + Refresh plugins)
 ```
-Starts the Vite dev server with hot reload. Perfect for active development.
 
-### Production Build
+While the UI labels advertise a 90 second refresh, the current implementation fetches data on initial load only. Configure polling or webhooks before relying on the indicator in live operations.
+
+## Production Build
 
 ```bash
-npm run build
+npm run build    # generate optimised assets in dist/
+npm run preview  # locally serve the production bundle
 ```
-Creates an optimized production bundle in the `dist/` folder. The build is minified and ready for deployment.
 
-### Preview Production Build
+The build outputs static assets suitable for deployment to AWS Amplify, S3 + CloudFront, or any modern static host. Ensure environment variables are set during build time so Vite can inline the correct API endpoints.
 
-```bash
-npm run preview
-```
-Runs a local server to preview the production build. Useful for testing before deployment.
+## Future Features
 
-### Linting
+- **Ability to drop Pins, Polygons, Other Shapes Manually**: Currentley the operator of the Dashboard cannot add these features manually on the dashboard they are fed in from AWS, it's a high priority to allow them to do this.
+- **Real time Weather and News Feed with LLM analysis**: We'd like to connect GNews, Guardian and GDELT API's to automatically pull in real news stories based on the region the map is centred on, firther on from this it would include LLM analysis and summaries. The same goes with online weather reports.
+- **Fully functioning Eligible Citizens Table**: The site features a blank space where a list of people on the map would appear, we would look to automatically have this feed from the map into the Dashboard list.
+- **Real time tracking**: Currentley the user sends their position once and that's it, we would look to actually implement AWS Real time tracking to enable us to track the user if they give permission locally.
+- **Greater Accesibility**: The site is easy to view and navigate, however could benefit from a light mode, testing to see if it's suitable for screen readers, the ability to interact using voice, potentially using OpenAI realtime voice/vision services. Support for other languages to enable future.
+- **Offline Mode**: The ability to utilise the application disconnected, you could save things locally and set it to send automatically to the backend once re-connected.
 
-```bash
-npm run lint
-```
-Checks your code for common issues and style violations using ESLint.
-
-## What's Next
-
-We have some exciting features planned for the dashboard
 
 ## Troubleshooting
 
-### Port Already in Use
-
-If port 5173 is taken, you can specify a different one:
-
-```bash
-npm run dev -- --port 3000
-```
-
-### Missing API Key Error
-
-If you see "Missing AWS Location Service API key" in the browser:
-1. Make sure you created a `.env` file in the Dashboard directory
-2. Check that the key name is exactly `VITE_AWS_LOCATION_KEY`
-3. Restart the dev server after creating/modifying `.env`
-
-### Map Not Displaying
-
-Check the browser console for errors. Common issues:
-- Invalid API key
-- Network connectivity problems
-- CORS issues with the GeoJSON URL
-
-### Clean Install
-
-If you're experiencing strange issues, try a fresh install:
-
-```bash
-rm -rf node_modules package-lock.json
-npm install
-```
+- **Missing API key**: Set `VITE_AWS_LOCATION_KEY` and restart the dev server if the map reports an authentication error.
+- **Feed parsing issues**: `NewsFeed` performs light sanitisation on malformed JSON; persistent failures will surface in the console for investigation.
+- **Map display problems**: Confirm network access to AWS Location Service and verify CORS configuration on any custom GeoJSON endpoints.
 
 ## Related Projects
 
-This dashboard works with the **SafePassage iOS app**, which allows users to submit hazard reports in the field. Check out the iOS app in the `SafePassage/` directory of this repository.
-
-
-
+This dashboard pairs with the **SafePassage iOS app**, which collects field reports and entitled-person data. The app lives in the `SafePassage/` directory of the same repository.
