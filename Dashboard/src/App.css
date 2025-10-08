@@ -33,21 +33,96 @@
 .header-content {
   max-width: 1040px;
   margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(1.5rem, 2.8vw, 2.25rem);
 }
 
-.header-content h1 {
+.header-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.header-text h1 {
   margin: 0.75rem 0 0;
   font-size: clamp(2.8rem, 4vw, 3.6rem);
   font-weight: 700;
   letter-spacing: 0.02em;
 }
 
-.header-content p {
-  margin: 1rem 0 0;
-  font-size: 1.1rem;
+.header-meta {
+  margin: 1.2rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(0.5rem, 1.6vw, 0.85rem);
+  align-items: center;
+}
+
+.header-subtitle {
+  margin: 0;
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
   max-width: 720px;
-  color: rgba(226, 232, 240, 0.82);
-  line-height: 1.7;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(226, 232, 240, 0.9);
+  line-height: 1.6;
+}
+
+.header-subtitle span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.95rem 0.45rem 0.7rem;
+  border-radius: 999px;
+  background: linear-gradient(120deg, rgba(37, 99, 235, 0.28), rgba(147, 197, 253, 0.18));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 12px 28px rgba(15, 23, 42, 0.32);
+}
+
+.header-doctrine {
+  margin: 0;
+  font-size: 0.92rem;
+  max-width: none;
+  color: rgba(148, 197, 253, 0.9);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.header-doctrine span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.42rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 197, 253, 0.32);
+  background: rgba(15, 23, 42, 0.55);
+  box-shadow:
+    inset 0 1px 0 rgba(148, 197, 253, 0.2),
+    0 12px 26px rgba(15, 23, 42, 0.38);
+}
+
+.header-doctrine::before {
+  content: none;
+}
+
+.header-logo {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(0.5rem, 1vw, 0.85rem);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.72);
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 14px 32px rgba(15, 23, 42, 0.4);
+}
+
+.header-logo__primary {
+  display: block;
+  width: clamp(112px, 18vw, 184px);
+  height: auto;
+  filter: drop-shadow(0 16px 36px rgba(15, 23, 42, 0.42));
 }
 
 .dashboard-main {
@@ -56,6 +131,39 @@
   flex-direction: column;
   gap: 3rem;
   padding: 0 2rem 3.5rem;
+}
+
+.dashboard-footer {
+  position: relative;
+  z-index: 1;
+  padding: 0 2rem 2.75rem;
+}
+
+.footer-content {
+  margin: 0 auto;
+  width: min(1040px, 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.footer-logo {
+  display: block;
+  width: clamp(48px, 8vw, 72px);
+  height: auto;
+  opacity: 0.95;
+  filter: drop-shadow(0 10px 22px rgba(15, 23, 42, 0.4));
+}
+
+.footer-credit {
+  margin: 0;
+  flex: 1;
+  text-align: center;
+  font-size: 0.9rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(148, 197, 253, 0.85);
 }
 
 .map-panel {
@@ -540,9 +648,39 @@
     padding: 2.8rem 1.5rem 1.7rem;
   }
 
+  .header-content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.85rem;
+  }
+
+  .header-text {
+    width: 100%;
+    text-align: center;
+  }
+
+  .header-logo {
+    align-self: center;
+    margin-bottom: 0.5rem;
+    padding: 0.75rem;
+  }
+
+  .header-logo__primary {
+    width: clamp(104px, 34vw, 168px);
+  }
+
+  .header-text h1 {
+    margin-top: 0.5rem;
+  }
+
   .dashboard-main {
     padding: 0 1.5rem 3rem;
     gap: 2.5rem;
+  }
+
+  .dashboard-footer {
+    padding: 0 1.5rem 2.3rem;
   }
 
   .intel-panel,
@@ -574,5 +712,24 @@
 @media (max-width: 600px) {
   .map-card {
     height: clamp(420px, 68vh, 720px);
+  }
+
+  .header-doctrine {
+    font-size: 0.88rem;
+    letter-spacing: 0.03em;
+  }
+
+  .footer-content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .footer-credit {
+    letter-spacing: 0.08em;
+  }
+
+  .footer-logo {
+    width: clamp(52px, 26vw, 68px);
   }
 }
