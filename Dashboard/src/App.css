@@ -90,6 +90,34 @@
   color: rgba(226, 232, 240, 0.72);
 }
 
+.refresh-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(14, 23, 42, 0.6);
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(226, 232, 240, 0.78);
+}
+
+.refresh-indicator__icon {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  border: 2px solid rgba(148, 163, 184, 0.32);
+  border-top-color: #93c5fd;
+  animation: refresh-spin 0.9s linear infinite;
+}
+
+.refresh-indicator__copy {
+  letter-spacing: 0.12em;
+}
+
 .status-indicator {
   display: inline-flex;
   align-items: center;
@@ -115,6 +143,15 @@
 
 .footnote-text {
   flex: 1;
+}
+
+@keyframes refresh-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .intel-panel,

@@ -94,12 +94,24 @@ export default function MapLibreMap({
     const polygonFillLayerId = `${sourceId}-polygon-fill`;
     const polygonOutlineLayerId = `${sourceId}-polygon-outline`;
     const pointLayerId = `${sourceId}-points`;
-    const abortController = new AbortController();
 
-    // Function that fetches the GeoJSON and adds it to the map
+    let currentAbortController = null;
+    let isEffectActive = true;
+
+    // Fetches the GeoJSON file from the provided URL and updates the map
     const addGeoJsonToMap = async () => {
+      if (!isEffectActive) {
+        return;
+      }
+
+      if (currentAbortController) {
+        currentAbortController.abort();
+      }
+
+      const abortController = new AbortController();
+      currentAbortController = abortController;
+
       try {
-        // Fetches the GeoJSON file from the provided URL
         const response = await fetch(geoJsonUrl, {
           signal: abortController.signal,
         });
@@ -108,59 +120,59 @@ export default function MapLibreMap({
         }
         const geojson = await response.json();
 
-        // Removes existing layers and source if they exist
-        if (map.getLayer(pointLayerId)) map.removeLayer(pointLayerId);
-        if (map.getLayer(polygonOutlineLayerId)) map.removeLayer(polygonOutlineLayerId);
-        if (map.getLayer(polygonFillLayerId)) map.removeLayer(polygonFillLayerId);
-        if (map.getSource(sourceId)) map.removeSource(sourceId);
+        const existingSource = map.getSource(sourceId);
+        if (existingSource && typeof existingSource.setData === "function") {
+          existingSource.setData(geojson);
+        } else {
+          if (map.getLayer(pointLayerId)) map.removeLayer(pointLayerId);
+          if (map.getLayer(polygonOutlineLayerId)) map.removeLayer(polygonOutlineLayerId);
+          if (map.getLayer(polygonFillLayerId)) map.removeLayer(polygonFillLayerId);
+          if (existingSource) map.removeSource(sourceId);
 
-        // Adds the raw GeoJSON file to the map as a data source.
-        map.addSource(sourceId, {
-          type: "geojson",
-          data: geojson,
-        });
+          // Adds the raw GeoJSON file to the map as a data source.
+          map.addSource(sourceId, {
+            type: "geojson",
+            data: geojson,
+          });
 
-        // Fills colour for polygon features
-        map.addLayer({
-          id: polygonFillLayerId,
-          type: "fill",
-          source: sourceId,
-          filter: ["==", "$type", "Polygon"],
-          paint: {
-            "fill-color": ["coalesce", ["get", "color"], "#4F46E5"],
-            "fill-opacity": 0.3,
-          },
-        });
+          map.addLayer({
+            id: polygonFillLayerId,
+            type: "fill",
+            source: sourceId,
+            filter: ["==", "$type", "Polygon"],
+            paint: {
+              "fill-color": ["coalesce", ["get", "color"], "#4F46E5"],
+              "fill-opacity": 0.3,
+            },
+          });
 
-        // Outline colour for polygon features
-        map.addLayer({
-          id: polygonOutlineLayerId,
-          type: "line",
-          source: sourceId,
-          filter: ["==", "$type", "Polygon"],
-          paint: {
-            "line-color": "#312E81",
-            "line-width": 2,
-          },
-        });
+          map.addLayer({
+            id: polygonOutlineLayerId,
+            type: "line",
+            source: sourceId,
+            filter: ["==", "$type", "Polygon"],
+            paint: {
+              "line-color": "#312E81",
+              "line-width": 2,
+            },
+          });
 
-        // Circle style for point features
-        map.addLayer({
-          id: pointLayerId,
-          type: "circle",
-          source: sourceId,
-          filter: ["==", "$type", "Point"],
-          paint: {
-            "circle-radius": 6,
-            "circle-color": ["coalesce", ["get", "color"], "#DC2626"],
-            "circle-stroke-color": "#FFFFFF",
-            "circle-stroke-width": 2,
-          },
-        });
+          map.addLayer({
+            id: pointLayerId,
+            type: "circle",
+            source: sourceId,
+            filter: ["==", "$type", "Point"],
+            paint: {
+              "circle-radius": 6,
+              "circle-color": ["coalesce", ["get", "color"], "#DC2626"],
+              "circle-stroke-color": "#FFFFFF",
+              "circle-stroke-width": 2,
+            },
+          });
+        }
 
         map.resize();
 
-        // Fit the map view
         const bounds = computeBoundsFromGeoJson(geojson);
         if (bounds) {
           map.fitBounds(bounds, { padding: 40, maxZoom: 13, duration: 800 });
@@ -172,19 +184,24 @@ export default function MapLibreMap({
       }
     };
 
-    // If the map is loaded, add GeoJSON. Otherwise, wait for load event.
+    const handleInitialLoad = () => {
+      addGeoJsonToMap();
+    };
+
     if (map.loaded()) {
       addGeoJsonToMap();
     } else {
-      map.once("load", addGeoJsonToMap);
+      map.once("load", handleInitialLoad);
     }
 
-    // Cleanup for this effect
     return () => {
-      abortController.abort();
-      map.off("load", addGeoJsonToMap);
+      isEffectActive = false;
+      if (currentAbortController) {
+        currentAbortController.abort();
+      }
+      map.off("load", handleInitialLoad);
     };
-  }, [geoJsonUrl]);
+  }, [geoJsonUrl, mapRef]);
 
   // This is the actual piece of HTML React puts on the page.
   return <div ref={mapContainerRef} style={{ height, width: "100%" }} />;
