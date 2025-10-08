@@ -95,7 +95,12 @@ export default function PinDataFetcher({ pinJsonUrl, mapRef }) {
           source: sourceId,
           paint: {
             "circle-radius": 8,
-            "circle-color": ["coalesce", ["get", "color"], "#EF4444"],
+            "circle-color": [
+              "case",
+              ["==", ["get", "to_evacuate"], true], "#EF4444", // Red for to_evacuate = true
+              ["==", ["get", "to_evacuate"], false], "#10B981", // Green for to_evacuate = false
+              "#6B7280" // Gray as fallback
+            ],
             "circle-stroke-color": "#FFFFFF",
             "circle-stroke-width": 2
           }
