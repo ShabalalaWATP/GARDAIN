@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import maplibregl from "maplibre-gl";
 
-export default function PinDataFetcher({ pinJsonUrl, mapRef }) {
+export default function PinDataFetcher({ pinJsonUrl, mapRef, onDataLoaded }) {
   const [pinData, setPinData] = useState(null);
   const [pinError, setPinError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -25,11 +25,19 @@ export default function PinDataFetcher({ pinJsonUrl, mapRef }) {
         setPinData(pinjson);
         setPinError(null);
         setIsLoading(false);
+        
+        if (onDataLoaded) {
+          onDataLoaded(pinjson, null, false);
+        }
       } catch (error) {
         if (error.name !== "AbortError") {
           console.error("Failed to load pin data:", error);
           setPinError(error.message);
           setIsLoading(false);
+          
+          if (onDataLoaded) {
+            onDataLoaded(null, error.message, false);
+          }
         }
       }
     };
