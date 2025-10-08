@@ -101,6 +101,8 @@ Security note: with Vite, any `VITE_` variable is exposed to the browser. For pr
 ## Development Workflow
 
 ```bash
+git clone https://github.com/AstraAppivate/hackathon-2025-team-3.git
+create .env file to host API keys and insert VITE_AWS_LOCATION_KEY="INSERT API KEY" & VITE_OPENWEATHER_API_KEY="INSERT API KEY"
 npm install      # install dependencies
 npm run dev      # start Vite dev server (default: http://localhost:5173)
 npm run lint     # run ESLint (React Hooks + Refresh plugins)
@@ -117,15 +119,14 @@ npm run preview  # locally serve the production bundle
 
 The build outputs static assets suitable for deployment to AWS Amplify, S3 + CloudFront, or any modern static host. Ensure environment variables are set during build time so Vite can inline the correct API endpoints.
 
-## Future Features
+## Future Features Roadmap
 
 - **Ability to drop Pins, Polygons, Other Shapes Manually**: Currentley the operator of the Dashboard cannot add these features manually on the dashboard they are fed in from AWS, it's a high priority to allow them to do this.
-- **Real time Weather and News Feed with LLM analysis**: We'd like to connect GNews, Guardian and GDELT API's to automatically pull in real news stories based on the region the map is centred on, firther on from this it would include LLM analysis and summaries. The same goes with online weather reports.
-- **Fully functioning Eligible Citizens Table**: The site features a blank space where a list of people on the map would appear, we would look to automatically have this feed from the map into the Dashboard list.
+- **Real time News Feed with LLM analysis**: We'd like to connect GNews, Guardian and GDELT API's to automatically pull in real news stories based on the region the map is centred on, firther on from this it would include LLM analysis and summaries.
 - **Real time tracking**: Currentley the user sends their position once and that's it, we would look to actually implement AWS Real time tracking to enable us to track the user if they give permission locally.
-- **Greater Accesibility**: The site is easy to view and navigate, however could benefit from a light mode, testing to see if it's suitable for screen readers, the ability to interact using voice, potentially using OpenAI realtime voice/vision services. Support for other languages to enable future.
+- **Greater Accesibility**: The dashboard has both a dark and light mode but further work to check if it's suitable for screen readers, the ability to interact using voice, potentially using OpenAI realtime voice/vision services would improve accesibility.
+- **Support for other languages**: Utilising AWS hosted Machine Translation this will enable greater interoperability with foreign partners.
 - **Offline Mode**: The ability to utilise the application disconnected, you could save things locally and set it to send automatically to the backend once re-connected.
-
 
 ## Troubleshooting
 
