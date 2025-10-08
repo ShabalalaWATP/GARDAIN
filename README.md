@@ -14,6 +14,8 @@ The GARDIAN Safe Passage System is essentialls two seperate apps, it brings toge
 - The GARDIAN Dashboard renders hazard overlays, entitled-person locations, and curated intelligence as a single operational view for the Military/FCDO Commanders.
 - Messaging and planned automations close the loop between command guidance and citizens awaiting extraction.
 
+- More in depth README files for the Dashboard Web App can be found in the Dashboard folder and for the iOS App in the iOS folder.
+
 ## Component Highlights
 
 ### GARDIAN Dashboard (React + MapLibre)
