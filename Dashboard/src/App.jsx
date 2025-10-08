@@ -5,6 +5,8 @@ import topRightLogo from './assets/logos/GARDIAN.jpg';
 import ukGovLogo from './assets/logos/UKGovLogo.jpg';
 import ukMilLogo from './assets/logos/UKMilLogo.jpg';
 import NewsFeed from './components/NewsFeed';
+import WeatherInfo from './components/WeatherInfo';
+import PhotoIntel from './components/PhotoIntel';
 import './App.css';
 
 function App() {
@@ -143,16 +145,24 @@ function App() {
         </div>
       </section>
 
+      <section className="ai-panel">
+        <div className="ai-content">
+          <h2>AI Scene Assessment</h2>
+          <PhotoIntel />
+        </div>
+      </section>
+
       <section className="weather-panel">
         <div className="weather-header">
           <h2>Operational Weather Outlook</h2>
-          <span className="weather-badge">WX Placeholder</span>
+          <span className="weather-badge">Live</span>
         </div>
-        <p className="weather-copy">
-          Insert theatre-specific forecasts, wind conditions, and visibility alerts here. This will help
-          convoy leads and air assets coordinate safe movement windows once the meteorological service is
-          linked in.
-        </p>
+        <WeatherInfo
+          placeQuery="De Vere Cotswold Water Park, Cirencester, GB"
+          lat={51.671305633027536}
+          lon={-1.898614152826156}
+          units="metric"
+        />
       </section>
 
       <section className="requests-panel">

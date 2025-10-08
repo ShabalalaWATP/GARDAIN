@@ -200,6 +200,196 @@
   color: rgba(226, 232, 240, 0.82);
 }
 
+/* Weather Panel */
+.weather-panel {
+  width: min(1040px, 100%);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.weather-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.weather-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.18);
+  color: rgba(187, 247, 208, 0.9);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.weather-status {
+  padding: 0.8rem 1rem;
+  border-radius: 0.9rem;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  color: rgba(226, 232, 240, 0.82);
+}
+
+.weather-status--error {
+  background: rgba(127, 29, 29, 0.45);
+  border-color: rgba(248, 113, 113, 0.25);
+  color: #fecaca;
+}
+
+.weather-grid {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 960px) {
+  .weather-grid { grid-template-columns: 1fr; }
+}
+
+.wx-card {
+  background: rgba(7, 12, 22, 0.82);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 1.1rem;
+  padding: 1rem;
+  box-shadow: 0 22px 50px rgba(15, 23, 42, 0.45);
+}
+
+.wx-card--current {
+  grid-column: 1 / -1;
+}
+
+.wx-current-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.wx-current-title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.wx-place { font-weight: 600; letter-spacing: 0.04em; }
+.wx-desc { color: rgba(148, 197, 253, 0.9); font-size: 0.95rem; }
+
+.wx-icon { width: 68px; height: 68px; image-rendering: -webkit-optimize-contrast; }
+
+.wx-current-body { display: flex; align-items: center; gap: 1.25rem; margin-top: 0.5rem; }
+.wx-temp { font-size: 2.2rem; font-weight: 700; }
+
+.wx-meta { list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 0.5rem; padding: 0; margin: 0; }
+.wx-meta li { display: flex; flex-direction: column; gap: 0.15rem; padding: 0.5rem 0.6rem; border: 1px solid rgba(148,163,184,0.18); border-radius: 0.6rem; background: rgba(15,23,42,0.5); }
+.wx-meta li span { color: rgba(148, 163, 184, 0.9); font-size: 0.8rem; }
+.wx-meta li strong { font-size: 0.95rem; }
+
+.wx-card--hourly {}
+.wx-subtitle { margin: 0 0 0.5rem; color: rgba(148, 197, 253, 0.9); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; font-size: 0.85rem; }
+.wx-hourly { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(84px, 1fr); gap: 0.6rem; overflow-x: auto; padding-bottom: 0.25rem; }
+.wx-hour { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; border: 1px solid rgba(148,163,184,0.18); background: rgba(15,23,42,0.5); border-radius: 0.6rem; padding: 0.5rem 0.4rem; }
+.wx-hour-time { font-size: 0.9rem; color: rgba(203, 213, 225, 0.9); }
+.wx-hour-icon { width: 40px; height: 40px; }
+.wx-hour-temp { font-weight: 600; }
+
+.wx-card--daily {}
+.wx-daily { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 0.6rem; }
+@media (max-width: 960px) { .wx-daily { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+.wx-day { display: flex; flex-direction: column; align-items: center; gap: 0.35rem; border: 1px solid rgba(148,163,184,0.18); background: rgba(15,23,42,0.5); border-radius: 0.6rem; padding: 0.5rem; }
+.wx-day-name { font-size: 0.9rem; color: rgba(203, 213, 225, 0.9); }
+.wx-day-icon { width: 40px; height: 40px; }
+.wx-day-range { display: flex; align-items: center; gap: 0.35rem; }
+.wx-min { color: rgba(148, 163, 184, 0.95); }
+.wx-max { font-weight: 700; }
+
+/* AI Scene Assessment */
+/* Panel wrapper matches other sections via shared group below */
+
+.ai-content { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.ai-status {
+  padding: 0.8rem 1rem;
+  border-radius: 0.9rem;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  color: rgba(226, 232, 240, 0.82);
+}
+
+.ai-status--error {
+  background: rgba(127, 29, 29, 0.45);
+  border-color: rgba(248, 113, 113, 0.25);
+  color: #fecaca;
+}
+
+.ai-card {
+  background: rgba(7, 12, 22, 0.82);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 1.1rem;
+  padding: 0.9rem;
+  box-shadow: 0 22px 50px rgba(15, 23, 42, 0.45);
+}
+
+.ai-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.ai-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.ai-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: rgba(15, 23, 42, 0.66);
+  color: rgba(226, 232, 240, 0.9);
+}
+
+.ai-chip--critical {
+  border-color: rgba(248, 113, 113, 0.35);
+  background: rgba(127, 29, 29, 0.35);
+  color: #fecaca;
+}
+
+.ai-conf {
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(226, 232, 240, 0.92);
+}
+
+.ai-thumb {
+  display: block;
+  flex-shrink: 0;
+  width: 120px;
+  height: 72px;
+  overflow: hidden;
+  border-radius: 0.6rem;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.ai-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .news-status--error {
   border-color: rgba(248, 113, 113, 0.55);
   color: rgba(254, 226, 226, 0.92);
@@ -376,7 +566,8 @@
 .weather-panel,
 .requests-panel,
 .contacts-panel,
-.reference-panel {
+.reference-panel,
+.ai-panel {
   width: min(1400px, 100%);
   margin: 0 auto;
   background: rgba(7, 12, 22, 0.78);
@@ -388,6 +579,7 @@
 }
 
 .intel-content,
+.ai-content,
 .weather-header,
 .requests-header {
   display: flex;
@@ -396,13 +588,15 @@
   gap: 1.25rem;
 }
 
-  .intel-content {
+  .intel-content,
+  .ai-content {
     width: 100%;
     max-width: none;
     flex-direction: column;
   }
 
-.intel-content h2 {
+.intel-content h2,
+.ai-content h2 {
   margin: 0;
   font-size: 1.72rem;
   font-weight: 600;
@@ -687,11 +881,13 @@
   .weather-panel,
   .requests-panel,
   .contacts-panel,
-  .reference-panel {
+  .reference-panel,
+  .ai-panel {
     padding: 1.9rem 1.75rem;
   }
 
   .intel-content,
+  .ai-content,
   .weather-header,
   .requests-header,
   .contacts-header {
