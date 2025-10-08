@@ -1,0 +1,32 @@
+.dashboard-header {
+  padding: 3.5rem 2rem 2rem;
+}
+
+.header-content {
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+.header-kicker {
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(148, 163, 184, 0.85);
+}
+
+.header-content h1 {
+  margin: 0.75rem 0 0;
+  font-size: clamp(2.8rem, 4vw, 3.6rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.header-content p {
+  margin: 1rem 0 0;
+  font-size: 1.1rem;
+  max-width: 720px;
+  color: rgba(226, 232, 240, 0.82);
+  line-height: 1.7;
+}
