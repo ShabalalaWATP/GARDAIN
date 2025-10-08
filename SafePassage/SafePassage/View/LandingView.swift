@@ -20,7 +20,8 @@ struct LandingView: View {
 
             Group {
                 if authenticationService.isSignedIn {
-                    ReportsView()
+                    ContentView()
+                        .environmentObject(ReportsService())
                 } else {
                     Button("Sign in") {
                         Task {
