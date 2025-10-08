@@ -3,22 +3,23 @@ import maplibregl from "maplibre-gl";
 import { createRoot } from "react-dom/client";
 import PinStatistics from "./PinStatistics";
 
-// Interactive Popup Component
 function InteractivePopup({ properties, onSendMessage }) {
-  const [message, setMessage] = useState("");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [sendStatus, setSendStatus] = useState(null);
 
   const handleSend = async () => {
-    if (!message.trim()) return;
+    if (!title.trim() || !description.trim()) return;
 
     setIsSending(true);
     setSendStatus(null);
 
     try {
-      await onSendMessage(message, properties);
+      await onSendMessage(title, description, properties);
       setSendStatus("success");
-      setMessage("");
+      setTitle("");
+      setDescription("");
     } catch (error) {
       setSendStatus("error");
       console.error("Failed to send message:", error);
@@ -35,51 +36,51 @@ function InteractivePopup({ properties, onSendMessage }) {
   };
 
   return (
-        <div style={{ 
-    fontFamily: "sans-serif", 
-    minWidth: "250px",
-    maxWidth: "350px",
-    width: "100%"
+    <div style={{ 
+      fontFamily: "sans-serif", 
+      minWidth: "250px",
+      maxWidth: "350px",
+      width: "100%"
     }}>
-    <h3 style={{ margin: "0 0 10px 0", fontSize: "16px", color: "#1F2937" }}>
+      <h3 style={{ margin: "0 0 10px 0", fontSize: "16px", color: "#1F2937" }}>
         {properties.name || "Unknown"}
-    </h3>
-    <div style={{ fontSize: "13px", color: "#4B5563", lineHeight: "1.5" }}>
+      </h3>
+      <div style={{ fontSize: "13px", color: "#4B5563", lineHeight: "1.5" }}>
         {properties.id && (
-        <p style={{ margin: "5px 0", wordWrap: "break-word", overflowWrap: "break-word" }}>
+          <p style={{ margin: "5px 0", wordWrap: "break-word", overflowWrap: "break-word" }}>
             <strong>ID:</strong> {properties.id}
-        </p>
+          </p>
         )}
         {properties.description && (
-        <p style={{ margin: "5px 0", wordWrap: "break-word", overflowWrap: "break-word" }}>
+          <p style={{ margin: "5px 0", wordWrap: "break-word", overflowWrap: "break-word" }}>
             <strong>Description:</strong> {properties.description}
-        </p>
+          </p>
         )}
         <p style={{ margin: "5px 0" }}>
-        <strong>To Evacuate:</strong>{" "}
-        {properties.to_evacuate === "true" ? "Yes" : "No"}
+          <strong>To Evacuate:</strong>{" "}
+          {properties.to_evacuate === "true" ? "Yes" : "No"}
         </p>
         <p style={{ margin: "5px 0" }}>
-        <strong>Location:</strong> {parseFloat(properties.latitude).toFixed(4)},{" "}
-        {parseFloat(properties.longitude).toFixed(4)}
+          <strong>Location:</strong> {parseFloat(properties.latitude).toFixed(4)},{" "}
+          {parseFloat(properties.longitude).toFixed(4)}
         </p>
         {properties.timestamp && (
-        <p style={{ margin: "5px 0", fontSize: "11px", color: "#6B7280" }}>
+          <p style={{ margin: "5px 0", fontSize: "11px", color: "#6B7280" }}>
             <strong>Timestamp:</strong>{" "}
             {new Date(properties.timestamp).toLocaleString()}
-        </p>
+          </p>
         )}
-    </div>
+      </div>
 
-    <div style={{ marginTop: "15px", paddingTop: "10px", borderTop: "1px solid #E5E7EB" }}>
+      <div style={{ marginTop: "15px", paddingTop: "10px", borderTop: "1px solid #E5E7EB" }}>
         <input
-        type="text"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        onKeyPress={handleKeyPress}
-        placeholder="Enter message..."
-        disabled={isSending}
-        style={{
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          onKeyPress={handleKeyPress}
+          placeholder="Enter title..."
+          disabled={isSending}
+          style={{
             width: "100%",
             padding: "8px",
             fontSize: "13px",
@@ -87,36 +88,53 @@ function InteractivePopup({ properties, onSendMessage }) {
             borderRadius: "4px",
             marginBottom: "8px",
             boxSizing: "border-box"
-        }}
+          }}
         />
-        <button
-        onClick={handleSend}
-        disabled={isSending || !message.trim()}
-        style={{
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Enter description..."
+          disabled={isSending}
+          rows="3"
+          style={{
             width: "100%",
             padding: "8px",
             fontSize: "13px",
-            backgroundColor: isSending || !message.trim() ? "#9CA3AF" : "#3B82F6",
+            border: "1px solid #D1D5DB",
+            borderRadius: "4px",
+            marginBottom: "8px",
+            boxSizing: "border-box",
+            resize: "vertical"
+          }}
+        />
+        <button
+          onClick={handleSend}
+          disabled={isSending || !title.trim() || !description.trim()}
+          style={{
+            width: "100%",
+            padding: "8px",
+            fontSize: "13px",
+            backgroundColor: isSending || !title.trim() || !description.trim() ? "#9CA3AF" : "#3B82F6",
             color: "white",
             border: "none",
             borderRadius: "4px",
-            cursor: isSending || !message.trim() ? "not-allowed" : "pointer",
+            cursor: isSending || !title.trim() || !description.trim() ? "not-allowed" : "pointer",
             fontWeight: "500"
-        }}
+          }}
         >
-        {isSending ? "Sending..." : "Send"}
+          {isSending ? "Sending..." : "Send"}
         </button>
         {sendStatus === "success" && (
-        <p style={{ margin: "5px 0 0 0", fontSize: "12px", color: "#10B981" }}>
+          <p style={{ margin: "5px 0 0 0", fontSize: "12px", color: "#10B981" }}>
             Message sent successfully!
-        </p>
+          </p>
         )}
         {sendStatus === "error" && (
-        <p style={{ margin: "5px 0 0 0", fontSize: "12px", color: "#EF4444" }}>
+          <p style={{ margin: "5px 0 0 0", fontSize: "12px", color: "#EF4444" }}>
             Failed to send message
-        </p>
+          </p>
         )}
-    </div>
+      </div>
     </div>
   );
 }
@@ -127,7 +145,6 @@ export default function PinDataFetcher({ pinJsonUrl, mapRef, messageEndpoint }) 
   const [isLoading, setIsLoading] = useState(false);
   const popupRootsRef = useRef(new Map());
 
-  // Fetch pin data from API
   useEffect(() => {
     if (!pinJsonUrl) return;
 
@@ -162,8 +179,7 @@ export default function PinDataFetcher({ pinJsonUrl, mapRef, messageEndpoint }) 
     };
   }, [pinJsonUrl]);
 
-  // Handle sending message
-  const handleSendMessage = async (message, properties) => {
+  const handleSendMessage = async (title, description, properties) => {
     const endpoint = 'https://ksip4rkha0.execute-api.eu-west-2.amazonaws.com/messaging-router'
     
     const response = await fetch(endpoint, {
@@ -172,9 +188,8 @@ export default function PinDataFetcher({ pinJsonUrl, mapRef, messageEndpoint }) 
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        message: message,
-        id: properties.id,
-        name: properties.name,
+        title: title,
+        description: description,
         timestamp: new Date().toISOString(),
       }),
     });
@@ -186,7 +201,6 @@ export default function PinDataFetcher({ pinJsonUrl, mapRef, messageEndpoint }) 
     return response.json();
   };
 
-  // Plot pins on the map when data is available
   useEffect(() => {
     const map = mapRef?.current;
     if (!map || !pinData) return;
@@ -228,7 +242,6 @@ export default function PinDataFetcher({ pinJsonUrl, mapRef, messageEndpoint }) 
           data: geojson,
         });
 
-        // Add layer for pins
         map.addLayer({
           id: layerId,
           type: "circle",
@@ -238,17 +251,16 @@ export default function PinDataFetcher({ pinJsonUrl, mapRef, messageEndpoint }) 
             "circle-color": [
               "case",
               ["==", ["get", "to_evacuate"], true],
-              "#EF4444", // Red for to_evacuate = true
+              "#EF4444",
               ["==", ["get", "to_evacuate"], false],
-              "#10B981", // Green for to_evacuate = false
-              "#6B7280", // Gray as fallback
+              "#10B981",
+              "#6B7280",
             ],
             "circle-stroke-color": "#FFFFFF",
             "circle-stroke-width": 2,
           },
         });
 
-        // Add click handler for pins
         map.on("click", layerId, (e) => {
           const coordinates = e.features[0].geometry.coordinates.slice();
           const properties = e.features[0].properties;
@@ -257,10 +269,8 @@ export default function PinDataFetcher({ pinJsonUrl, mapRef, messageEndpoint }) 
             coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
           }
 
-          // Create a container for the React component
           const popupContainer = document.createElement("div");
           
-          // Create popup
           const popup = new maplibregl.Popup({
             closeButton: true,
             closeOnClick: false,
@@ -270,7 +280,6 @@ export default function PinDataFetcher({ pinJsonUrl, mapRef, messageEndpoint }) 
             .setDOMContent(popupContainer)
             .addTo(map);
 
-          // Render React component into popup
           const root = createRoot(popupContainer);
           root.render(
             <InteractivePopup
@@ -279,10 +288,8 @@ export default function PinDataFetcher({ pinJsonUrl, mapRef, messageEndpoint }) 
             />
           );
 
-          // Store root for cleanup
           popupRootsRef.current.set(popup, root);
 
-          // Cleanup when popup is closed
           popup.on("close", () => {
             const root = popupRootsRef.current.get(popup);
             if (root) {
@@ -292,12 +299,10 @@ export default function PinDataFetcher({ pinJsonUrl, mapRef, messageEndpoint }) 
           });
         });
 
-        // Change the mouse to a pointer when hovering over pins
         map.on("mouseenter", layerId, () => {
           map.getCanvas().style.cursor = "pointer";
         });
 
-        // Change it back to default when not hovering
         map.on("mouseleave", layerId, () => {
           map.getCanvas().style.cursor = "";
         });
@@ -315,11 +320,9 @@ export default function PinDataFetcher({ pinJsonUrl, mapRef, messageEndpoint }) 
     }
 
     return () => {
-      // Cleanup when component unmounts
       if (map.getLayer(layerId)) map.removeLayer(layerId);
       if (map.getSource(sourceId)) map.removeSource(sourceId);
       
-      // Cleanup all popup roots
       popupRootsRef.current.forEach((root) => root.unmount());
       popupRootsRef.current.clear();
     };
