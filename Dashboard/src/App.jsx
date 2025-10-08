@@ -111,6 +111,10 @@ function App() {
   const pinJsonUrl = "https://ksip4rkha0.execute-api.eu-west-2.amazonaws.com/entitled-persons";
   const mapRef = useRef(null);
 
+  const handleExportDashboard = () => {
+    window.print();
+  };
+
   const renderDashboard = () => (
     <>
       <section className="map-panel">
@@ -260,8 +264,18 @@ function App() {
               </p>
             </div>
           </div>
-          <div className="header-logo" aria-hidden="true">
-            <img className="header-logo__primary" src={topRightLogo} alt="GARDIAN crest" />
+          <div className="header-actions">
+            <div className="header-logo" aria-hidden="true">
+              <img className="header-logo__primary" src={topRightLogo} alt="GARDIAN crest" />
+            </div>
+            <button
+              type="button"
+              className="export-dashboard-button export-dashboard-button--header"
+              onClick={handleExportDashboard}
+              aria-label="Export dashboard"
+            >
+              Export Dashboard
+            </button>
           </div>
         </div>
       </header>
