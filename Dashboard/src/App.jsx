@@ -122,6 +122,10 @@ function App() {
         </div>
         <div className="map-footnote">
           <span className="status-indicator">Live Feed</span>
+          <span className="refresh-indicator" aria-label="Map refreshes every ninety seconds">
+            <span className="refresh-indicator__icon" aria-hidden="true" />
+            <span className="refresh-indicator__copy">90s auto-refresh</span>
+          </span>
           <span className="footnote-text">
             Data refreshes automatically as new JDP field reports arrive.
           </span>
