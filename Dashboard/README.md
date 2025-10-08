@@ -74,8 +74,27 @@ Provide the following environment variables in a `.env` file at the root of the 
 | `VITE_AWS_LOCATION_KEY` | AWS Location Service API key used by MapLibre for tile requests. | _None (required)_ |
 | `VITE_GEOJSON_URL` | Remote GeoJSON (FeatureCollection) describing polygons/points to render. | `https://zones-of-interest.s3.eu-west-2.amazonaws.com/hazard_zones.json` |
 | `VITE_NEWS_FEED_URL` | Optional override for the news feed endpoint. | `https://oqwz797yb0.execute-api.eu-west-2.amazonaws.com/prod/news` |
+| `VITE_OPENWEATHER_API_KEY` | OpenWeather API key used by the weather panel. | _None (required for weather)_ |
 
 The entitled-person feed and messaging endpoints are currently hard-coded for the Hackathon environment. For productionisation, promote both URLs into env vars (e.g. `VITE_PIN_DATA_URL`, `VITE_MESSAGING_URL`) so deployments can target staging or live APIs without code changes.
+
+### Weather Panel
+
+The weather section in `App.jsx` renders `src/components/WeatherInfo.jsx`, which uses OpenWeather’s Geocoding + Current Weather + 5‑day/3‑hour endpoints to show:
+
+- Current conditions (temp, wind/gust, humidity, visibility)
+- Next few 3‑hour steps (configurable)
+- A 5‑day outlook (daily min/max with representative icon)
+
+Add your API key to `.env`:
+
+```
+VITE_OPENWEATHER_API_KEY=YOUR_KEY_HERE
+```
+
+By default, the component requests weather for “De Vere Cotswold Water Park, Cirencester, GB”. You can override the place or provide `lat`/`lon` props if you have precise coordinates. Results are cached in `localStorage` briefly to reduce API calls.
+
+Security note: with Vite, any `VITE_` variable is exposed to the browser. For production, proxy these requests via a backend/serverless function to avoid exposing your key directly.
 
 ## Development Workflow
 
