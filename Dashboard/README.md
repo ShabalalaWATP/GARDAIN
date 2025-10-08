@@ -33,16 +33,17 @@ The main React tree lives in `src/App.jsx`. It wires the shared `mapRef` into `M
 
 ### Component Topology
 
-![alt text](image.png)
+![alt text](image-1.png)
 
+```
 App
-|-- MapLibreMap (MapLibre + AWS Location)
-|-- PinDataFetcher
-|   |-- InteractivePopup (message dispatch)
-|   |-- PinStatistics (floating summary)
-|-- NewsFeed
-|-- [ManualPinManager] (ready for activation)
-`-- Auxiliary panels (weather, requests, contacts, doctrine)
+├── MapLibreMap (MapLibre + AWS Location)
+├── PinDataFetcher
+│   ├── InteractivePopup (message dispatch)
+│   └── PinStatistics (floating summary)
+├── NewsFeed
+├── [ManualPinManager] (ready for activation)
+└── Auxiliary panels (weather, requests, contacts, doctrine)
 ```
 
 ## Project Structure
