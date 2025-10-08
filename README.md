@@ -4,7 +4,7 @@ Coordinated reporting and situational awareness for Non-Combatant Evacuation Ope
 
 ![GARDIAN Dashboard Overview](Dashboard/image-1.png)
 
-SafePassage Platform brings together the SafePassage iOS app used by evacuees and field teams with the GARDIAN real-time dashboard monitored by command posts. Data captured on mobile flows through AWS services to populate the live map, intelligence panels, and messaging tools that power decision-making during crisis response. The solution was built during a 48-hour hackathon and lays the groundwork for a production-ready evacuation management suite.
+The GARDIAN Safe Passage Platform brings together the SafePassage iOS app used by evacuees and field teams with the GARDIAN real-time REACT dashboard monitored by command posts. Data captured on mobile flows through AWS services to populate the live map, intelligence panels, and messaging tools that power decision-making during crisis response. The solution was built during a 48-hour hackathon and lays the groundwork for a production-ready evacuation management suite.
 
 ## Platform Overview
 - Field operators capture hazard reports, imagery, and evacuation priorities directly from the incident zone.
