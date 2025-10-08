@@ -1,6 +1,9 @@
 import { useRef } from 'react';
 import MapLibreMap from './components/MapLibreMap';
 import PinDataFetcher from './components/PinDataFetcher';
+import topRightLogo from './assets/logos/GARDIAN.jpg';
+import ukGovLogo from './assets/logos/UKGovLogo.jpg';
+import ukMilLogo from './assets/logos/UKMilLogo.jpg';
 import './App.css';
 
 function App() {
@@ -238,10 +241,20 @@ function App() {
     <div className="map-page">
       <header className="dashboard-header">
         <div className="header-content">
-          <h1>SafePassage Dashboard</h1>
-          <p>
-            Aligned to JDP-3-51 to assist with Disaster Relief and Non Combat Evacuations (NEO).
-          </p>
+          <div className="header-text">
+            <h1>GARDIAN</h1>
+            <div className="header-meta">
+              <p className="header-subtitle">
+                <span>Geospatial Aid Response &amp; Disaster Information Analysis Network</span>
+              </p>
+              <p className="header-doctrine">
+                <span>Aligned to JDP-3-51 to assist with disaster relief and non-combatant evacuations (NEO)</span>
+              </p>
+            </div>
+          </div>
+          <div className="header-logo" aria-hidden="true">
+            <img className="header-logo__primary" src={topRightLogo} alt="GARDIAN crest" />
+          </div>
         </div>
       </header>
 
@@ -257,6 +270,21 @@ function App() {
           </div>
         )}
       </main>
+      <footer className="dashboard-footer" aria-label="Solution attribution">
+        <div className="footer-content">
+          <img
+            className="footer-logo"
+            src={ukGovLogo}
+            alt="UK Government crest"
+          />
+          <p className="footer-credit">Created by Team 3 for the Defence Hackathon 2025</p>
+          <img
+            className="footer-logo"
+            src={ukMilLogo}
+            alt="UK Military crest"
+          />
+        </div>
+      </footer>
     </div>
   );
 }
