@@ -26,7 +26,6 @@ const computeBoundsFromGeoJson = (geojson) => {
   return hasCoordinates ? bounds : null;
 };
 
-// Defines the main MapLibreMap React component
 export default function MapLibreMap({
   apiKey,
   region = "eu-west-2",
@@ -36,18 +35,16 @@ export default function MapLibreMap({
   zoom = 11,
   height = "100vh",
   geoJsonUrl,
+  mapRef: externalMapRef,
 }) {
 
-  // Keeps references to the map container and map object
   const mapContainerRef = useRef(null);
-  const mapRef = useRef(null);  
+  const mapRef = externalMapRef || useRef(null);
 
-  // Creates the base map when the component appears
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
 
-    // Initialises the map
     const map = new maplibregl.Map({
       container: mapContainerRef.current,
       style: `https://maps.geo.${region}.amazonaws.com/v2/styles/${styleName}/descriptor?key=${apiKey}&color-scheme=${colorScheme}`,
@@ -55,11 +52,9 @@ export default function MapLibreMap({
       zoom,
     });
 
-    // Adds zoom and rotation controls to the map.
     map.addControl(new maplibregl.NavigationControl(), "top-left");
     mapRef.current = map;
 
-    // Cleans up on unmount
     return () => {
       mapRef.current = null;
       map.remove();
@@ -67,7 +62,7 @@ export default function MapLibreMap({
   }, [apiKey, region, styleName, colorScheme, center, zoom]);
 
 
-  //Fetches GeoJSON, draws polygons/points, adjusts view
+  //Fetches GeoJSON, draws polygons
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !geoJsonUrl) return;
