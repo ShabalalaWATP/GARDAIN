@@ -33,6 +33,33 @@ The main React tree lives in `src/App.jsx`. It wires the shared `mapRef` into `M
 
 ### Component Topology
 
+flowchart LR
+  %% NEO Dashboard: Minimal Architecture
+
+  subgraph FE["Frontend"]
+    FE1[React App]
+  end
+
+  subgraph GW["AWS API Gateway"]
+    APIG[REST/HTTP API]
+  end
+
+  subgraph LAMBDA["AWS Lambda"]
+    FN[Handler]
+  end
+
+  subgraph DATA["Data Stores"]
+    DDB[(DynamoDB)]
+    S3[(S3 Bucket)]
+  end
+
+  %% Primary request/response path
+  FE1 -- "HTTPS (GET/POST JSON)" --> APIG
+  APIG --> FN
+  FN -- "Read/Write items" --> DDB
+  FN -- "Upload/Fetch objects" --> S3
+  FN -- "Return JSON" --> APIG
+  APIG -- "HTTP 200 JSON" --> FE1
 ```
 App
 |-- MapLibreMap (MapLibre + AWS Location)
