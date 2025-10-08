@@ -1,5 +1,7 @@
 # GARDIAN SafePassage System
 
+<img width="1024" height="1024" alt="image" src="https://github.com/user-attachments/assets/9c2aea97-ca63-4c43-bd08-4f9084a7c31b" />
+
 Coordinated reporting and situational awareness for Non-Combatant Evacuation Operations (NEO).
 
 ![GARDIAN Dashboard Overview](Dashboard/image-1.png)
