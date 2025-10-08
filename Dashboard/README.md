@@ -33,7 +33,8 @@ The main React tree lives in `src/App.jsx`. It wires the shared `mapRef` into `M
 
 ### Component Topology
 
-```
+![alt text](image.png)
+
 App
 |-- MapLibreMap (MapLibre + AWS Location)
 |-- PinDataFetcher
