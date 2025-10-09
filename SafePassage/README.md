@@ -377,5 +377,7 @@ SafePassage will work with the **NEO Dashboard**, a React-based web application 
 - [AWS AppSync Developer Guide](https://docs.aws.amazon.com/appsync/)
 - [Cognito Authentication Flows](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-authentication-flow.html)
 
+<img width="1024" height="1024" alt="image" src="https://github.com/user-attachments/assets/5b095baf-af28-465d-8c42-52a28f44ab3e" />
+
 
 
