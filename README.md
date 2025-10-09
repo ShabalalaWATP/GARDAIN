@@ -56,12 +56,13 @@ Refer to `Dashboard/README.md` and `SafePassage/README.md` for deep dives, API r
 
 ### Dashboard
 
-Prerequisites: Node.js 18+, npm, AWS Location Service API key.
+Prerequisites: Node.js 18+, npm, AWS Location Service API key & Weather API key.
 
 ```bash
+git clone https://github.com/AstraAppivate/hackathon-2025-team-3.git
 cd Dashboard
+# create .env with VITE_AWS_LOCATION_KEY, VITE_OPENWEATHER_API_KEY and asertain your own API keys.
 npm install
-# create .env with VITE_AWS_LOCATION_KEY, VITE_GEOJSON_URL, VITE_NEWS_FEED_URL
 npm run dev
 ```
 
@@ -103,6 +104,7 @@ Select an iOS 16+ simulator or device and run with `Cmd+R`. Ensure `amplifyconfi
 
 ## Future Features Roadmap
 
+- **The Web App hosted on AWS**: As it stands the Web App is run locally, we would look to put this on AWS.
 - **The addition of proper user authentification**: To ensure proper security we must ensure users of the app are tracked and ensure their data on their own device is protected.
 - **Greater cross platform support**: The initial apps take the form of a web app and an iOS app, we would look to offer an Android Mobile App, a Windows, Linux and MacOS Desktop app in the future for both SafePassage and GARDIAN.
 - **Ability to drop Pins, Polygons, Other Shapes Manually**: Currentley the operator of the Dashboard cannot add these features manually on the dashboard they are fed in from AWS, it's a high priority to allow them to do this.
