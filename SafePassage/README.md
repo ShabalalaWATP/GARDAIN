@@ -368,7 +368,7 @@ We have plans to expand SafePassage's capabilities:
 
 ## Related Projects
 
-SafePassage will work with the **NEO Dashboard**, a React-based web application that displays reports on an interactive map. Find it in the `Dashboard/` directory of this repository.
+SafePassage will work with the **[GARDIAN React Web App](https://github.com/AstraAppivate/hackathon-2025-team-3/blob/main/Dashboard/README.md)**, a React-based web application that displays reports on an interactive map. Find it in the `Dashboard/` directory of this repository.
 
 ## Resources
 
@@ -378,6 +378,7 @@ SafePassage will work with the **NEO Dashboard**, a React-based web application 
 - [Cognito Authentication Flows](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-authentication-flow.html)
 
 <img width="1024" height="1024" alt="image" src="https://github.com/user-attachments/assets/5b095baf-af28-465d-8c42-52a28f44ab3e" />
+
 
 
 
