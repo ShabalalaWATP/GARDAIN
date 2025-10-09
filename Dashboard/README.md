@@ -136,7 +136,7 @@ The build outputs static assets suitable for deployment to AWS Amplify, S3 + Clo
 
 - **Ability to drop Pins, Polygons, Other Shapes Manually**: Currentley the operator of the Dashboard cannot add these features manually on the dashboard they are fed in from AWS, it's a high priority to allow them to do this.
 - **Real time News Feed**: We'd like to connect GNews, Guardian and GDELT API's to automatically pull in real news stories based on the region the map is centred on, firther on from this it would include LLM analysis and summaries.
-- **News Feed and Weather LLM Analysis: We'd like to use AWS hosted LLM's to analyse the news and weather that come in and present concise summaries to thew commander.
+- **News Feed and Weather LLM Analysis**: We'd like to use AWS hosted LLM's to analyse the news and weather that come in and present concise summaries to thew commander.
 - **Real time tracking**: Currentley the user sends their position once and that's it, we would look to actually implement AWS Real time tracking to enable us to track the user if they give permission locally.
 - **Greater Accesibility**: The dashboard has both a dark and light mode but further work to check if it's suitable for screen readers, the ability to interact using voice, potentially using OpenAI realtime voice/vision services would improve accesibility.
 - **Support for other languages**: Utilising AWS hosted Machine Translation this will enable greater interoperability with foreign partners.
