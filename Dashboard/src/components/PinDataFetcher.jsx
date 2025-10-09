@@ -6,6 +6,8 @@ import PinStatistics from "./PinStatistics";
 function InteractivePopup({ properties, onSendMessage }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [targetLatitude, setTargetLatitude] = useState("");
+  const [targetLongitude, setTargetLongitude] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [sendStatus, setSendStatus] = useState(null);
 
@@ -16,10 +18,12 @@ function InteractivePopup({ properties, onSendMessage }) {
     setSendStatus(null);
 
     try {
-      await onSendMessage(title, description, properties);
+      await onSendMessage(title, description, targetLatitude, targetLongitude, properties);
       setSendStatus("success");
       setTitle("");
       setDescription("");
+      setTargetLatitude("");
+      setTargetLongitude("");
     } catch (error) {
       setSendStatus("error");
       console.error("Failed to send message:", error);
@@ -38,9 +42,9 @@ function InteractivePopup({ properties, onSendMessage }) {
   return (
     <div style={{ 
       fontFamily: "sans-serif", 
-      minWidth: "250px",
-      maxWidth: "350px",
-      width: "100%"
+      width: "450px",
+      padding: "12px",
+      boxSizing: "border-box"
     }}>
       <h3 style={{ margin: "0 0 10px 0", fontSize: "16px", color: "#1F2937" }}>
         {properties.name || "Unknown"}
@@ -107,6 +111,40 @@ function InteractivePopup({ properties, onSendMessage }) {
             resize: "vertical"
           }}
         />
+        <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
+          <input
+            type="number"
+            step="any"
+            value={targetLatitude}
+            onChange={(e) => setTargetLatitude(e.target.value)}
+            placeholder="Target latitude..."
+            disabled={isSending}
+            style={{
+              flex: 1,
+              padding: "8px",
+              fontSize: "13px",
+              border: "1px solid #D1D5DB",
+              borderRadius: "4px",
+              boxSizing: "border-box"
+            }}
+          />
+          <input
+            type="number"
+            step="any"
+            value={targetLongitude}
+            onChange={(e) => setTargetLongitude(e.target.value)}
+            placeholder="Target longitude..."
+            disabled={isSending}
+            style={{
+              flex: 1,
+              padding: "8px",
+              fontSize: "13px",
+              border: "1px solid #D1D5DB",
+              borderRadius: "4px",
+              boxSizing: "border-box"
+            }}
+          />
+        </div>
         <button
           onClick={handleSend}
           disabled={isSending || !title.trim() || !description.trim()}
@@ -179,19 +217,27 @@ export default function PinDataFetcher({ pinJsonUrl, mapRef, messageEndpoint }) 
     };
   }, [pinJsonUrl]);
 
-  const handleSendMessage = async (title, description, properties) => {
+  const handleSendMessage = async (title, description, targetLatitude, targetLongitude, properties) => {
     const endpoint = 'https://ksip4rkha0.execute-api.eu-west-2.amazonaws.com/messaging-router'
+    
+    const payload = {
+      title: title,
+      description: description,
+      timestamp: new Date().toISOString(),
+    };
+
+    // Add target coordinates if provided
+    if (targetLatitude && targetLongitude) {
+      payload.targetLatitude = parseFloat(targetLatitude);
+      payload.targetLongitude = parseFloat(targetLongitude);
+    }
     
     const response = await fetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        title: title,
-        description: description,
-        timestamp: new Date().toISOString(),
-      }),
+      body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
@@ -274,7 +320,8 @@ export default function PinDataFetcher({ pinJsonUrl, mapRef, messageEndpoint }) 
           const popup = new maplibregl.Popup({
             closeButton: true,
             closeOnClick: false,
-            maxWidth: "350px",
+            maxWidth: "none",
+            offset: 15
           })
             .setLngLat(coordinates)
             .setDOMContent(popupContainer)
