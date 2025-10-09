@@ -101,6 +101,6 @@ Select an iOS 16+ simulator or device and run with `Cmd+R`. Ensure `amplifyconfi
 
 ## License
 
-MIT – see the repository root for details.
+MIT
 
 <img width="1024" height="1024" alt="image" src="https://github.com/user-attachments/assets/9c2aea97-ca63-4c43-bd08-4f9084a7c31b" />
