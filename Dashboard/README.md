@@ -33,7 +33,7 @@ The main React tree lives in `src/App.jsx`. It wires the shared `mapRef` into `M
 
 ### Component Topology
 
-![alt text](image-1.png)
+<img width="1222" height="515" alt="image" src="https://github.com/user-attachments/assets/a0903f8d-5a55-4326-9bca-2942a9f17820" />
 
 ```
 App
