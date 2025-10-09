@@ -54,7 +54,7 @@ Refer to `Dashboard/README.md` and `SafePassage/README.md` for deep dives, API r
 
 ## Getting Started
 
-### Dashboard
+### React Web App Dashboard
 
 Prerequisites: Node.js 18+, npm, AWS Location Service API key & Weather API key.
 
