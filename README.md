@@ -88,13 +88,16 @@ Select an iOS 16+ simulator or device and run with `Cmd+R`. Ensure `amplifyconfi
 4. Command staff monitor metrics, review reports, and craft instructions that flow back through the messaging router.
 5. Planned enhancements add live tracking, richer analytics, and offline resilience for both sides of the platform.
 
-## Roadmap
+## Future Features Roadmap
 
-- Enable manual pin and polygon creation on the dashboard to capture ad-hoc intelligence.
-- Add live location tracking, push notifications, and offline mode to the mobile experience.
-- Expand news, weather, and doctrinal feeds with automated summarisation tied to map context.
-- Promote API endpoints and polling intervals to environment variables for flexible deployments.
-- Strengthen accessibility, localisation, and assistive interactions (voice, screen reader) across web and mobile clients.
+- **The addition of proper user authentification**: To ensure proper security we must ensure users of the app are tracked and ensure their data on their own device is protected.
+- **Greater cross platform support**: The initial apps take the form of a web app and an iOS app, we would look to offer an Android Mobile App, a Windows, Linux and MacOS Desktop app in the future for both SafePassage and GARDIAN.
+- **Ability to drop Pins, Polygons, Other Shapes Manually**: Currentley the operator of the Dashboard cannot add these features manually on the dashboard they are fed in from AWS, it's a high priority to allow them to do this.
+- **Real time News Feed with LLM analysis**: We'd like to connect GNews, Guardian and GDELT API's to automatically pull in real news stories based on the region the map is centred on, firther on from this it would include LLM analysis and summaries.
+- **Real time tracking**: Currentley the user sends their position once and that's it, we would look to actually implement AWS Real time tracking to enable us to track the user if they give permission locally.
+- **Greater Accesibility**: The dashboard has both a dark and light mode but further work to check if it's suitable for screen readers, the ability to interact using voice, potentially using OpenAI realtime voice/vision services would improve accesibility.
+- **Support for other languages**: Utilising AWS hosted Machine Translation this will enable greater interoperability with foreign partners.
+- **Offline Mode**: The ability to utilise the application disconnected, you could save things locally and set it to send automatically to the backend once re-connected.
 
 ## License
 
