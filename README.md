@@ -6,7 +6,10 @@ The system is used to coordinate reporting and situational awareness for Non-Com
 
 ![GARDIAN Dashboard Overview](Dashboard/image-1.png)
 
-The GARDIAN Safe Passage System is essentialls two seperate apps, it brings together the SafePassage iOS app used by evacuees and field teams with the GARDIAN real-time REACT dashboard web-app monitored by command posts. Data captured on mobile flows through AWS services to populate the live map, intelligence panels, and messaging tools that power decision-making during crisis response. The solution was built during a 48-hour hackathon and lays the groundwork for a production-ready NEO/Disaster Relief management suite for the Military and FCDO Commanders.
+The GARDIAN Safe Passage System is essentialls two seperate apps.
+
+- **SafePassage iOS app**: This element is our USP, it's to be used by evacuees in the field to report their situation to authorities and request help or evacuation.
+- **GARDIAN REACT Web App dashboard** monitored by command posts operators on behalf of the Military or FCDO commanders. Data captured on mobile flows through AWS services to populate the live map, intelligence panels, and messaging tools that power decision making during crisis response. 
 
 ## Platform Overview
 - Citizens with the SafePassage iOS application can report their location, status, send in images, request evacuation and more.
