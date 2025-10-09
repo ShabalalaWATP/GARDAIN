@@ -1,91 +1,106 @@
-# SafePassage
+# GARDIAN SafePassage System
 
-A real-time hazard reporting and mapping system built for emergency response scenarios. SafePassage combines a native iOS app for field reporting with a react based web dashboard for command centre monitoring.
+GARDIAN stands for Geospatial Aid Response & Disaster Information Analysis Network
 
-## What We Built
+The system is used to coordinate reporting and situational awareness for Non-Combatant Evacuation Operations (NEO) and disaster relief operations.
 
-During a 48-hour hackathon, we've created two seperate apps one aimed at Commanders and one aimed at eligible citizens to help coordinate safety during crisis situations:
+![GARDIAN Dashboard Overview](Dashboard/image-1.png)
 
-**SafePassage iOS App** - Field personnel use this to request NEO evacuation, report hazards, take photos, and mark locations requiring evacuation. Everything syncs instantly to the cloud.
+The GARDIAN Safe Passage System is essentialls two seperate apps, it brings together the SafePassage iOS app used by evacuees and field teams with the GARDIAN real-time REACT dashboard web-app monitored by command posts. Data captured on mobile flows through AWS services to populate the live map, intelligence panels, and messaging tools that power decision-making during crisis response. The solution was built during a 48-hour hackathon and lays the groundwork for a production-ready NEO/Disaster Relief management suite for the Military and FCDO Commanders.
 
-**NEO Dashboard** - Command centres see all reports on an interactive map with hazard zones displayed as coloured polygons and individual reports as markers. Eventually info from the SafePassage app will display on the dashboard.
+## Platform Overview
+- Citizens with the SafePassage iOS application can report their location, status, send in images, request evacuation and more.
+- AWS Amplify, AppSync, Lambda, GraphQL, Cognito, and S3 synchronise structured data and media into shared mission datasets.
+- The GARDIAN Dashboard renders hazard overlays, entitled-person locations, and curated intelligence as a single operational view for the Military/FCDO Commanders.
+- Messaging and planned automations close the loop between command guidance and citizens awaiting extraction.
 
-The name "NEO" stands for Non-Combatant Evacuation Operation - This is the military term for getting civilians out of danger zones quickly and safely.
+- More in depth README files for the [Dashboard Web App](https://github.com/AstraAppivate/hackathon-2025-team-3/blob/main/Dashboard/README.md) can be found in the Dashboard folder and for the [iOS App](https://github.com/AstraAppivate/hackathon-2025-team-3/blob/main/SafePassage/README.md) in the iOS folder.
 
-## The Stack
+## Component Highlights
 
-We've leveraged AWS services to build something robust in a short time:
+### GARDIAN Dashboard (React + MapLibre)
+- MapLibre plus AWS Location Service tiles deliver fast, styleable mapping with hazard polygons sourced from S3 or configurable GeoJSON endpoints.
+- Entitled-person feeds render colour-coded pins, aggregate evacuation statistics, and support targeted messaging via the messaging router.
+- Intelligence, weather, contacts, and doctrine panels surface the wider mission context while maintaining a command-centre look and feel.
+- Built with Vite for rapid iteration, linting (`npm run lint`), and production builds ready for static hosting.
 
-- **iOS App**: SwiftUI + AWS Amplify Gen 1 for Auth, Data and Storage. Stretch target of using Geo
-- **Web Dashboard**: React + Vite + MapLibre GL
-- **Backend**: AWS Amplify, AWS Cognito (auth), AppSync (GraphQL API), S3 (storage), Location Service (maps)
+### SafePassage iOS App (SwiftUI + Amplify)
+- SwiftUI guides users through authentication, hazard capture, photo upload, and evacuation prioritisation in the field.
+- Amplify-configured Cognito, AppSync (GraphQL), and S3 provide secure sync, image storage, and real-time data propagation.
+- MVVM architecture separates views, models, and services so new data fields or workflows can be added quickly.
+- Designed for iOS 16+ with Combine for reactive updates and native gestures for a familiar mobile experience.
 
-Everything talks to each other through AWS AppSync's GraphQL API with real-time subscriptions for instant updates.
+## Data and Services
 
-## Quick Start
+| Service / Resource | Used By | Purpose |
+| --- | --- | --- |
+| AWS Cognito | SafePassage, GARDIAN | Authentication and session management for field and command users. |
+| AWS AppSync (GraphQL) | SafePassage | Real-time mutation and subscription layer for reports, status, and metadata. |
+| AWS S3 | SafePassage, GARDIAN | Storage for imagery, hazard GeoJSON, and other mission assets. |
+| AWS Location Service + MapLibre | GARDIAN | Base maps, navigation controls, and responsive hazard rendering. |
+| Messaging Router API | GARDIAN (planned SafePassage integration) | Sends instructions from command staff back to individuals in the field. |
 
-### iOS App
+## Repository Layout
 
+```text
+hackathon-2025-team-3/
+  Dashboard/          # GARDIAN dashboard source, assets, and build scripts
+  SafePassage/        # SafePassage iOS workspace and Amplify backend config
+  potentialmaplibre.jsx
+  README.md           # Combined platform overview (this file)
+```
 
-SafePassage (feature set for a GOV.UK app aimed at British citizens)
-Xcode 26 / macOS 26 and iOS 26 (also builds for iPadOS 26)
-SafePassage
+Refer to `Dashboard/README.md` and `SafePassage/README.md` for deep dives, API references, and component-specific setup.
 
-Configure on macOS: Xcode, git, Node.js, npm.
-
+## Getting Started
 
 ### Dashboard
+
+Prerequisites: Node.js 18+, npm, AWS Location Service API key.
 
 ```bash
 cd Dashboard
 npm install
-echo "VITE_AWS_LOCATION_KEY=your-key-here" > .env
+# create .env with VITE_AWS_LOCATION_KEY, VITE_GEOJSON_URL, VITE_NEWS_FEED_URL
 npm run dev
 ```
 
-Open `http://localhost:5173` in your browser. Check the Dashboard folder for more details.
+The dev server runs on `http://localhost:5173`. Use `npm run build` to emit production assets to `dist/`.
 
-## How It Works
+### iOS App
 
-1. Field users sign in to the iOS app via AWS Cognito
-2. They create reports with photos, descriptions, and GPS coordinates
-3. Reports upload to S3 (images) and DynamoDB (metadata) via AppSync
-4. The web dashboard fetches this data and displays it on an AWS Location Service map
-5. Command staff see hazard zones (polygons) and individual reports (markers) in real-time
+Prerequisites: macOS (Ventura or later), Xcode 14+, Amplify CLI (`npm install -g @aws-amplify/cli`), AWS account.
 
-Authorisation rules ensure users only see their own reports - we built this for a demo, so we kept the security model simple.
-
-## What's Next
-
-We've got loads of ideas to expand this:
-
-- Live GPS tracking in the iOS app
-- Push notifications for new hazards nearby
-- Route planning that avoids danger zones
-- Admin tools for command staff to verify reports
-- Offline mode for when network connectivity is dodgy
-- Integration with existing emergency management systems
-- and much much much more!!!
-
-## Project Structure
-
-```
-hackathon-2025-team-3/
-├── SafePassage/          # iOS app (Swift/SwiftUI)
-│   ├── SafePassage/      # App source
-│   └── amplify/          # AWS backend config
-├── Dashboard/            # Web dashboard (React)
-│   └── src/
-│       ├── components/
-│       └── App.jsx
-└── README.md            # You are here
+```bash
+cd SafePassage
+amplify init           # or reuse the provided Amplify backend configuration
+amplify push
+open SafePassage.xcodeproj   # open SafePassage.xcworkspace when using CocoaPods
 ```
 
-## The Team
+Select an iOS 16+ simulator or device and run with `Cmd+R`. Ensure `amplifyconfiguration.json` and `awsconfiguration.json` contain the credentials for your Amplify environment.
 
-Built by Team 3 during the 2025 hackathon!
+## Operational Flow
 
-## Licence
+1. Field personnel authenticate through Cognito and submit hazard reports, photos, and prioritisation flags via SafePassage.
+2. Amplify propagates structured data and media to AppSync, DynamoDB, and S3.
+3. GARDIAN Dashboard fetches hazard overlays, entitled-person feeds, and mission intelligence to present a single operational view.
+4. Command staff monitor metrics, review reports, and craft instructions that flow back through the messaging router.
+5. Planned enhancements add live tracking, richer analytics, and offline resilience for both sides of the platform.
 
-MIT - Use this however you like. 
+## Future Features Roadmap
 
+- **The addition of proper user authentification**: To ensure proper security we must ensure users of the app are tracked and ensure their data on their own device is protected.
+- **Greater cross platform support**: The initial apps take the form of a web app and an iOS app, we would look to offer an Android Mobile App, a Windows, Linux and MacOS Desktop app in the future for both SafePassage and GARDIAN.
+- **Ability to drop Pins, Polygons, Other Shapes Manually**: Currentley the operator of the Dashboard cannot add these features manually on the dashboard they are fed in from AWS, it's a high priority to allow them to do this.
+- **Real time News Feed with LLM analysis**: We'd like to connect GNews, Guardian and GDELT API's to automatically pull in real news stories based on the region the map is centred on, firther on from this it would include LLM analysis and summaries.
+- **Real time tracking**: Currentley the user sends their position once and that's it, we would look to actually implement AWS Real time tracking to enable us to track the user if they give permission locally.
+- **Greater Accesibility**: The dashboard has both a dark and light mode but further work to check if it's suitable for screen readers, the ability to interact using voice, potentially using OpenAI realtime voice/vision services would improve accesibility.
+- **Support for other languages**: Utilising AWS hosted Machine Translation this will enable greater interoperability with foreign partners.
+- **Offline Mode**: The ability to utilise the application disconnected, you could save things locally and set it to send automatically to the backend once re-connected.
+
+## License
+
+MIT
+
+<img width="1024" height="1024" alt="image" src="https://github.com/user-attachments/assets/9c2aea97-ca63-4c43-bd08-4f9084a7c31b" />

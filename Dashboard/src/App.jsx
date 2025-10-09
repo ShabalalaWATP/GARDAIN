@@ -1,13 +1,42 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import MapLibreMap from './components/MapLibreMap';
 import PinDataFetcher from './components/PinDataFetcher';
 import topRightLogo from './assets/logos/GARDIAN.jpg';
 import ukGovLogo from './assets/logos/UKGovLogo.jpg';
 import ukMilLogo from './assets/logos/UKMilLogo.jpg';
 import NewsFeed from './components/NewsFeed';
+import WeatherInfo from './components/WeatherInfo';
+import PhotoIntel from './components/PhotoIntel';
 import './App.css';
 
 function App() {
+  const getPreferredTheme = () => {
+    if (typeof window === "undefined") {
+      return "dark";
+    }
+    const stored = window.localStorage.getItem("gardian-theme");
+    if (stored === "light" || stored === "dark") {
+      return stored;
+    }
+    const prefersLight = window.matchMedia?.("(prefers-color-scheme: light)")?.matches;
+    return prefersLight ? "light" : "dark";
+  };
+
+  const [theme, setTheme] = useState(getPreferredTheme);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    window.localStorage.setItem("gardian-theme", theme);
+    document.documentElement.setAttribute("data-app-theme", theme);
+    document.documentElement.style.colorScheme = theme === "dark" ? "dark" : "light";
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((previous) => (previous === "dark" ? "light" : "dark"));
+  };
+
   const contactDirectory = [
     {
       name: "PJHQ Watchkeeper",
@@ -109,6 +138,10 @@ function App() {
   const pinJsonUrl = "https://ksip4rkha0.execute-api.eu-west-2.amazonaws.com/entitled-persons";
   const mapRef = useRef(null);
 
+  const handleExportDashboard = () => {
+    window.print();
+  };
+
   const renderDashboard = () => (
     <>
       <section className="map-panel">
@@ -143,16 +176,24 @@ function App() {
         </div>
       </section>
 
+      <section className="ai-panel">
+        <div className="ai-content">
+          <h2>AI Scene Assessment</h2>
+          <PhotoIntel />
+        </div>
+      </section>
+
       <section className="weather-panel">
         <div className="weather-header">
           <h2>Operational Weather Outlook</h2>
-          <span className="weather-badge">WX Placeholder</span>
+          <span className="weather-badge">Live</span>
         </div>
-        <p className="weather-copy">
-          Insert theatre-specific forecasts, wind conditions, and visibility alerts here. This will help
-          convoy leads and air assets coordinate safe movement windows once the meteorological service is
-          linked in.
-        </p>
+        <WeatherInfo
+          placeQuery="De Vere Cotswold Water Park, Cirencester, GB"
+          lat={51.671305633027536}
+          lon={-1.898614152826156}
+          units="metric"
+        />
       </section>
 
       <section className="requests-panel">
@@ -236,7 +277,7 @@ function App() {
   );
 
   return (
-    <div className="map-page">
+    <div className="map-page" data-theme={theme}>
       <header className="dashboard-header">
         <div className="header-content">
           <div className="header-text">
@@ -250,8 +291,30 @@ function App() {
               </p>
             </div>
           </div>
-          <div className="header-logo" aria-hidden="true">
-            <img className="header-logo__primary" src={topRightLogo} alt="GARDIAN crest" />
+          <div className="header-actions">
+            <button
+              type="button"
+              className="theme-toggle"
+              onClick={toggleTheme}
+              aria-label={`Activate ${theme === "dark" ? "light" : "dark"} mode`}
+              aria-pressed={theme === "light"}
+            >
+              <span className="theme-toggle__icon" aria-hidden="true">
+                {theme === "dark" ? "☀️" : "🌙"}
+              </span>
+              <span>{theme === "dark" ? "Light" : "Dark"} Mode</span>
+            </button>
+            <div className="header-logo" aria-hidden="true">
+              <img className="header-logo__primary" src={topRightLogo} alt="GARDIAN crest" />
+            </div>
+            <button
+              type="button"
+              className="export-dashboard-button export-dashboard-button--header"
+              onClick={handleExportDashboard}
+              aria-label="Export dashboard"
+            >
+              Export Dashboard
+            </button>
           </div>
         </div>
       </header>
