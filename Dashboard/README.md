@@ -150,4 +150,4 @@ The build outputs static assets suitable for deployment to AWS Amplify, S3 + Clo
 
 ## Related Projects
 
-This dashboard pairs with the **SafePassage iOS app**, which collects field reports and entitled-person data. The app lives in the `SafePassage/` directory of the same repository.
+This dashboard pairs with the **[SafePassage iOS app](https://github.com/AstraAppivate/hackathon-2025-team-3/blob/main/SafePassage/README.md)**, which collects field reports and entitled-person data. The app lives in the `SafePassage/` directory of the same repository.
