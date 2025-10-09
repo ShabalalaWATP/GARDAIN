@@ -24,6 +24,8 @@ We built SafePassage using Apple's modern iOS development tools and AWS's enterp
 - **AWS S3** - Scalable image storage
 - **Combine** - Apple's reactive programming framework
 
+<img width="2310" height="945" alt="image" src="https://github.com/user-attachments/assets/00fd6355-97b7-4dff-969b-c83949506e47" />
+
 ## Getting Started
 
 ### Prerequisites
@@ -374,5 +376,6 @@ SafePassage will work with the **NEO Dashboard**, a React-based web application 
 - [SwiftUI Tutorials](https://developer.apple.com/tutorials/swiftui)
 - [AWS AppSync Developer Guide](https://docs.aws.amazon.com/appsync/)
 - [Cognito Authentication Flows](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-authentication-flow.html)
+
 
 
