@@ -88,6 +88,19 @@ Select an iOS 16+ simulator or device and run with `Cmd+R`. Ensure `amplifyconfi
 4. Command staff monitor metrics, review reports, and craft instructions that flow back through the messaging router.
 5. Planned enhancements add live tracking, richer analytics, and offline resilience for both sides of the platform.
 
+## Current Features 
+
+- **AWS Map**: To enable the relevant commanders to view the situation on the ground. Capabale of displaying various overlays and featres from AWS.
+- **Entitled Persons Statistics**: To display a list of persons on the map and if they have requested evacuation or not.
+- **Dark/Light Mode**: The website is default dark mode as we can all agree it's far superior ;) but the user has the option to switch to light mode to aid accessibility.
+- **Export Functionality**: The user can click either export the entire dashboard this puts the entire webpage snapshot onto a PDF, The other option is the ability to export all current users on the map's details into either a CSV file, Word Doc Table or PDF Table. This enables rapid sharing of data.
+- **Local News Report Feed**: So far we have a placeholder for this but eventually will use GNews, GDELT and Guardian API's to display news related to a user/commanders search terms.
+- **AI Scene Assessment**: We have the ability to utilise the iOS app to send a photo to AWS and have AWS Rekognition analyse the photograph and itdentify what the user has claimed, for example determine if it's a valid picture of a flood, or people with Weapons etc... to give commanders confidence false reports aren't coming in.
+- **Operational Weather Outlook**: This uses an API to fetch local weather and display it on the site to enable commanders to gain greater environmental insights.
+- **Evacuation & Assistance Request Table**: A placeholder area to display a current list of all people on the map.
+- **Quick Contacts Area**: Highlighting to the Commander a list of quick key contacts they may need, including PJHQ, FCDO, UK Embassy etc...
+- **Doctrine & Support References**: An area to display JDP-3-51, the FCDO Policy and Allied Joint Doctrine for NEO.
+
 ## Future Features Roadmap
 
 - **The addition of proper user authentification**: To ensure proper security we must ensure users of the app are tracked and ensure their data on their own device is protected.
