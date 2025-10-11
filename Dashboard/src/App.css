@@ -256,7 +256,7 @@
   margin: 0.75rem 0 0;
   font-size: clamp(2.8rem, 4vw, 3.6rem);
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.18em;
 }
 
 .header-meta {
@@ -272,7 +272,8 @@
   font-size: clamp(1.05rem, 2vw, 1.35rem);
   max-width: 900px;
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.18em;
+  word-spacing: 0.32em;
   text-transform: uppercase;
   color: var(--color-text-strong);
   line-height: 1.45;
@@ -282,7 +283,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.28rem 1.35rem 0.32rem 1.05rem;
+  padding: 0.32rem 1.6rem 0.36rem 1.25rem;
   border-radius: 999px;
   background: var(--chip-gradient);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), var(--shadow-chip);
@@ -293,7 +294,8 @@
   font-size: 0.92rem;
   max-width: none;
   color: var(--color-text-accent);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.14em;
+  word-spacing: 0.28em;
   text-transform: uppercase;
 }
 
@@ -301,7 +303,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
-  padding: 0.26rem 1.25rem;
+  padding: 0.3rem 1.55rem;
   border-radius: 999px;
   border: 1px solid var(--doctrine-border);
   background: var(--surface-chip);
@@ -1124,8 +1126,9 @@
   }
 
   .header-doctrine {
-    font-size: 0.88rem;
-    letter-spacing: 0.03em;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    word-spacing: 0.25em;
   }
 
   .footer-content {
