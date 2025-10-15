@@ -26,7 +26,7 @@ The web application delivers a single pane of glass for mission staff:
 | Hazard GeoJSON | Configurable S3 bucket (`VITE_GEOJSON_URL`) with polygon and point features | `MapLibreMap` | Draws hazard zones, outlines, and ad-hoc point markers; fits map bounds. |
 | Entitled-person API | `https://ksip4rkha0.execute-api.eu-west-2.amazonaws.com/entitled-persons` | `src/components/PinDataFetcher.jsx` | Supplies evacuee pin data and metadata for popups & statistics. |
 | Messaging router | `https://ksip4rkha0.execute-api.eu-west-2.amazonaws.com/messaging-router` | `PinDataFetcher` -> `InteractivePopup` | Sends operator-authored messages back to selected evacuees. |
-| News feed | `VITE_NEWS_FEED_URL` (defaults to the Hackathon feed) | `src/components/NewsFeed.jsx` | Displays rolling open-source intelligence summaries. |
+| News feed | GNews (`VITE_GNEWS_API_KEY`), GDELT, Guardian (`VITE_GUARDIAN_API_KEY`) | `src/components/NewsFeed.jsx` | Aggregates location-aware incident reporting with multi-source fallbacks. |
 | Manual overlays (planned) | Operator input | `src/components/ManualPinManager.jsx` | Enables drag-to-drop manual markers when mounted (feature scaffolding present). |
 
 The main React tree lives in `src/App.jsx`. It wires the shared `mapRef` into `MapLibreMap` and `PinDataFetcher`, then composes the supporting panels. Layout, colour treatments, and responsive behaviour are handled in `src/App.css`.
@@ -75,7 +75,8 @@ Provide the following environment variables in a `.env` file at the root of the 
 | --- | --- | --- |
 | `VITE_AWS_LOCATION_KEY` | AWS Location Service API key used by MapLibre for tile requests. | _None (required)_ |
 | `VITE_GEOJSON_URL` | Remote GeoJSON (FeatureCollection) describing polygons/points to render. | `https://zones-of-interest.s3.eu-west-2.amazonaws.com/hazard_zones.json` |
-| `VITE_NEWS_FEED_URL` | Optional override for the news feed endpoint. | `https://oqwz797yb0.execute-api.eu-west-2.amazonaws.com/prod/news` |
+| `VITE_GNEWS_API_KEY` | Token issued by gnews.io for disaster/news queries. | _None (required for GNews source)_ |
+| `VITE_GUARDIAN_API_KEY` | Guardian Content API key for enriched local coverage. | _None (required for Guardian source)_ |
 | `VITE_OPENWEATHER_API_KEY` | OpenWeather API key used by the weather panel. | _None (required for weather)_ |
 
 The entitled-person feed and messaging endpoints are currently hard-coded for the Hackathon environment. For productionisation, promote both URLs into env vars (e.g. `VITE_PIN_DATA_URL`, `VITE_MESSAGING_URL`) so deployments can target staging or live APIs without code changes.
@@ -98,11 +99,21 @@ By default, the component requests weather for “De Vere Cotswold Water Park, C
 
 Security note: with Vite, any `VITE_` variable is exposed to the browser. For production, proxy these requests via a backend/serverless function to avoid exposing your key directly.
 
+### News Feed
+
+`src/components/NewsFeed.jsx` now triangulates the operator's location (with a London fallback) and queries multiple open-source feeds:
+
+- **GNews** (`VITE_GNEWS_API_KEY`) for broad severe weather, natural disaster, and civil unrest coverage filtered to the detected country.
+- **Guardian Content API** (`VITE_GUARDIAN_API_KEY`) for high-quality UK and international reporting with rich summaries.
+- **GDELT Doc API** (no key required) for machine-indexed incident articles that often surface niche or emerging events.
+
+The feed merges, deduplicates, and sorts stories by recency. If one or more sources fail or lack credentials, the panel still renders what is available and surfaces inline warnings. For production, consider brokering these API calls via a server-side proxy to keep tokens private.
+
 ## Development Workflow
 
 ```bash
 git clone https://github.com/AstraAppivate/hackathon-2025-team-3.git
-create .env file to host API keys and insert VITE_AWS_LOCATION_KEY="INSERT API KEY" & VITE_OPENWEATHER_API_KEY="INSERT API KEY"
+ create .env file to host API keys and insert VITE_AWS_LOCATION_KEY="..." VITE_OPENWEATHER_API_KEY="..." VITE_GNEWS_API_KEY="..." VITE_GUARDIAN_API_KEY="..."
 npm install      # install dependencies
 npm run dev      # start Vite dev server (default: http://localhost:5173)
 npm run lint     # run ESLint (React Hooks + Refresh plugins)
@@ -145,7 +156,7 @@ The build outputs static assets suitable for deployment to AWS Amplify, S3 + Clo
 ## Troubleshooting
 
 - **Missing API key**: Set `VITE_AWS_LOCATION_KEY` and restart the dev server if the map reports an authentication error.
-- **Feed parsing issues**: `NewsFeed` performs light sanitisation on malformed JSON; persistent failures will surface in the console for investigation.
+- **News source errors**: Check that `VITE_GNEWS_API_KEY` and `VITE_GUARDIAN_API_KEY` are present, and verify that upstream APIs allow browser-side requests (CORS).
 - **Map display problems**: Confirm network access to AWS Location Service and verify CORS configuration on any custom GeoJSON endpoints.
 
 ## Related Projects

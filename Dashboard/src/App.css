@@ -62,12 +62,18 @@
 
   display: flex;
   flex-direction: column;
-  min-height: 100%;
+  /* Ensure full viewport height across mobile and desktop */
+  min-height: 100vh;
+  min-height: 100dvh;
   position: relative;
-  overflow: hidden;
+  /* Allow vertical scrolling on mobile; prevent sideways spill */
+  overflow-x: hidden;
+  overflow-y: auto;
   color: var(--color-text-primary);
   background: var(--page-bg-gradient);
   color-scheme: dark;
+  /* Respect bottom safe area on iOS */
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .map-page::before {
@@ -349,6 +355,16 @@
   padding: 0 2rem 2.75rem;
 }
 
+/* Safe-area insets for notched devices (iOS) */
+.dashboard-header {
+  padding-left: calc(2rem + env(safe-area-inset-left));
+  padding-right: calc(2rem + env(safe-area-inset-right));
+}
+.dashboard-footer {
+  padding-left: calc(2rem + env(safe-area-inset-left));
+  padding-right: calc(2rem + env(safe-area-inset-right));
+}
+
 .footer-content {
   margin: 0 auto;
   width: min(1040px, 100%);
@@ -386,7 +402,7 @@
 }
 
 .map-card {
-  height: clamp(540px, 75vh, 900px);
+  height: clamp(540px, 75dvh, 900px);
   background: var(--surface-card);
   border: 1px solid var(--border-medium);
   border-radius: 1.65rem;
@@ -689,11 +705,72 @@
   color: var(--color-text-strong);
 }
 
+.news-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.news-title a:hover,
+.news-title a:focus-visible {
+  color: var(--color-text-accent);
+  text-decoration: underline;
+  outline: none;
+}
+
+.news-meta {
+  margin-top: 0.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.news-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-chip);
+  background: var(--surface-chip);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.news-meta-time {
+  opacity: 0.85;
+}
+
 .news-desc {
   margin-top: 0.35rem;
   font-size: 0.96rem;
   line-height: 1.6;
   color: var(--color-text-secondary);
+}
+
+.news-context {
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+  color: var(--color-text-tertiary);
+}
+
+.news-context strong {
+  color: var(--color-text-soft);
+  font-weight: 600;
+}
+
+.news-footnote {
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  line-height: 1.45;
+}
+
+.news-footnote div + div {
+  margin-top: 0.2rem;
 }
 
 .map-card > * {
@@ -1050,6 +1127,9 @@
 @media (max-width: 900px) {
   .dashboard-header {
     padding: 2.8rem 1.5rem 1.7rem;
+    /* Safe area padding on iOS */
+    padding-left: calc(1.5rem + env(safe-area-inset-left));
+    padding-right: calc(1.5rem + env(safe-area-inset-right));
   }
 
   .header-content {
@@ -1090,6 +1170,9 @@
 
   .dashboard-footer {
     padding: 0 1.5rem 2.3rem;
+    /* Safe area padding on iOS */
+    padding-left: calc(1.5rem + env(safe-area-inset-left));
+    padding-right: calc(1.5rem + env(safe-area-inset-right));
   }
 
   .intel-panel,
@@ -1120,9 +1203,105 @@
   }
 }
 
+@media (max-width: 720px) {
+  .dashboard-main {
+    padding: 0 1.25rem 2.5rem;
+    gap: 2rem;
+  }
+
+  .intel-panel,
+  .weather-panel,
+  .requests-panel,
+  .contacts-panel,
+  .reference-panel,
+  .ai-panel {
+    padding: 1.6rem 1.4rem;
+    border-radius: 1.1rem;
+  }
+
+  .intel-content h2,
+  .ai-content h2,
+  .weather-header h2,
+  .requests-header h2,
+  .contacts-header h2,
+  .reference-content h2 {
+    font-size: 1.48rem;
+  }
+
+  .map-panel {
+    gap: 0.9rem;
+  }
+
+  .map-footnote {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.5rem 0.75rem;
+  }
+
+  .ai-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .ai-thumb {
+    width: 100%;
+    max-width: none;
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
+
+  .ai-thumb img {
+    height: 100%;
+  }
+
+  .news-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .news-thumb {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
+
+  .wx-current-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .wx-current-body {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .wx-meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .wx-daily {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .wx-hourly {
+    grid-auto-columns: minmax(68px, 1fr);
+  }
+
+  .contacts-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+
+  .reference-links {
+    gap: 0.8rem;
+  }
+}
+
 @media (max-width: 600px) {
   .map-card {
-    height: clamp(420px, 68vh, 720px);
+    height: clamp(420px, 68dvh, 720px);
   }
 
   .header-doctrine {
@@ -1143,6 +1322,87 @@
 
   .footer-logo {
     width: clamp(52px, 26vw, 68px);
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-header {
+    padding: 2.4rem 1rem 1.4rem;
+    /* Safe area padding on iOS */
+    padding-left: calc(1rem + env(safe-area-inset-left));
+    padding-right: calc(1rem + env(safe-area-inset-right));
+  }
+
+  /* Prevent header word from forcing horizontal scroll on small iPhones */
+  .header-text h1 {
+    font-size: clamp(1.8rem, 8.5vw, 2.4rem);
+    letter-spacing: 0.12em;
+  }
+
+  .dashboard-main {
+    padding: 0 1rem 2.1rem;
+    gap: 1.6rem;
+  }
+
+  .intel-panel,
+  .weather-panel,
+  .requests-panel,
+  .contacts-panel,
+  .reference-panel,
+  .ai-panel {
+    padding: 1.35rem 1.1rem;
+    border-radius: 1rem;
+  }
+
+  .intel-content h2,
+  .ai-content h2,
+  .weather-header h2,
+  .requests-header h2,
+  .contacts-header h2,
+  .reference-content h2 {
+    font-size: 1.32rem;
+  }
+
+  .map-card {
+    border-radius: 1.25rem;
+  }
+
+  .map-footnote {
+    width: 100%;
+  }
+
+  .refresh-indicator {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .news-thumb {
+    aspect-ratio: 4 / 3;
+  }
+
+  .wx-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .wx-daily {
+    grid-template-columns: 1fr;
+  }
+
+  .wx-hourly {
+    grid-auto-columns: minmax(60px, 1fr);
+  }
+
+  .weather-header {
+    align-items: flex-start;
+    gap: 0.65rem;
+  }
+
+  .weather-badge {
+    align-self: flex-start;
+  }
+
+  .contacts-grid {
+    grid-template-columns: 1fr;
   }
 }
 

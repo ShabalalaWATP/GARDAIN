@@ -21,3 +21,27 @@ body {
   min-width: 320px;
   background-color: inherit;
 }
+
+/* Viewport and iOS Safari fixes */
+html {
+  /* Allow iOS Safari to use full height when URL bar collapses */
+  height: -webkit-fill-available;
+  /* Avoid iOS auto text zoom breaking layout */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  /* Prefer dynamic viewport to avoid 100vh cutoffs on mobile */
+  min-height: 100vh;
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
+  overflow-x: hidden;
+}
+
+#root {
+  /* Override early 100vh rule in index.html and ensure scroll */
+  height: auto;
+  min-height: 100vh;
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
+}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import maplibregl from "maplibre-gl";
 import { createRoot } from "react-dom/client";
 import PinStatistics from "./PinStatistics";
@@ -18,7 +18,7 @@ function InteractivePopup({ properties, onSendMessage }) {
     setSendStatus(null);
 
     try {
-      await onSendMessage(title, description, targetLatitude, targetLongitude, properties);
+      await onSendMessage(title, description, targetLatitude, targetLongitude);
       setSendStatus("success");
       setTitle("");
       setDescription("");
@@ -40,12 +40,16 @@ function InteractivePopup({ properties, onSendMessage }) {
   };
 
   return (
-    <div style={{ 
-      fontFamily: "sans-serif", 
-      width: "450px",
-      padding: "12px",
-      boxSizing: "border-box"
-    }}>
+    <div
+      style={{
+        fontFamily: "sans-serif",
+        /* Ensure popup fits small screens and map card */
+        width: "auto",
+        maxWidth: "min(420px, calc(100vw - 4rem))",
+        padding: "12px",
+        boxSizing: "border-box",
+      }}
+    >
       <h3 style={{ margin: "0 0 10px 0", fontSize: "16px", color: "#1F2937" }}>
         {properties.name || "Unknown"}
       </h3>
@@ -217,35 +221,38 @@ export default function PinDataFetcher({ pinJsonUrl, mapRef, messageEndpoint }) 
     };
   }, [pinJsonUrl]);
 
-  const handleSendMessage = async (title, description, targetLatitude, targetLongitude, properties) => {
-    const endpoint = 'https://ksip4rkha0.execute-api.eu-west-2.amazonaws.com/messaging-router'
-    
-    const payload = {
-      title: title,
-      description: description,
-      timestamp: new Date().toISOString(),
-    };
+  const handleSendMessage = useCallback(
+    async (title, description, targetLatitude, targetLongitude) => {
+      const endpoint =
+        messageEndpoint || "https://ksip4rkha0.execute-api.eu-west-2.amazonaws.com/messaging-router";
 
-    // Add target coordinates if provided
-    if (targetLatitude && targetLongitude) {
-      payload.targetLatitude = parseFloat(targetLatitude);
-      payload.targetLongitude = parseFloat(targetLongitude);
-    }
-    
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
+      const payload = {
+        title,
+        description,
+        timestamp: new Date().toISOString(),
+      };
 
-    if (!response.ok) {
-      throw new Error(`Failed to send message: ${response.status}`);
-    }
+      if (targetLatitude && targetLongitude) {
+        payload.targetLatitude = parseFloat(targetLatitude);
+        payload.targetLongitude = parseFloat(targetLongitude);
+      }
 
-    return response.json();
-  };
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to send message: ${response.status}`);
+      }
+
+      return response.json();
+    },
+    [messageEndpoint]
+  );
 
   useEffect(() => {
     const map = mapRef?.current;
@@ -253,30 +260,48 @@ export default function PinDataFetcher({ pinJsonUrl, mapRef, messageEndpoint }) 
 
     const sourceId = "pin-data-source";
     const layerId = "pin-data-layer";
+    const rootsMap = popupRootsRef.current;
 
     const addPinsToMap = () => {
       try {
         if (map.getLayer(layerId)) map.removeLayer(layerId);
         if (map.getSource(sourceId)) map.removeSource(sourceId);
 
-        const features = pinData.map((pin, index) => {
-          let coordinates;
-          if (pin.longitude && pin.latitude) {
-            coordinates = [pin.longitude, pin.latitude];
-          }
+        const features = pinData
+          .map((pin, index) => {
+            const lon = Number(pin.longitude);
+            const lat = Number(pin.latitude);
+            if (!Number.isFinite(lon) || !Number.isFinite(lat)) {
+              console.warn("Skipping pin with invalid coordinates", pin);
+              return null;
+            }
 
-          return {
-            type: "Feature",
-            geometry: {
-              type: "Point",
-              coordinates: coordinates,
-            },
-            properties: {
-              ...pin,
-              id: pin.id || index,
-            },
-          };
-        });
+            const toEvacuateRaw = pin.to_evacuate;
+            const toEvacuate =
+              typeof toEvacuateRaw === "boolean"
+                ? toEvacuateRaw
+                : typeof toEvacuateRaw === "string"
+                ? toEvacuateRaw.trim().toLowerCase() === "true"
+                : Boolean(toEvacuateRaw);
+
+            return {
+              type: "Feature",
+              geometry: {
+                type: "Point",
+                coordinates: [lon, lat],
+              },
+              properties: {
+                ...pin,
+                id: pin.id || index,
+                longitude: lon,
+                latitude: lat,
+                to_evacuate: toEvacuate,
+              },
+            };
+          })
+          .filter(Boolean);
+
+        console.log("Mapping pins to features", features);
 
         const geojson = {
           type: "FeatureCollection",
@@ -320,7 +345,8 @@ export default function PinDataFetcher({ pinJsonUrl, mapRef, messageEndpoint }) 
           const popup = new maplibregl.Popup({
             closeButton: true,
             closeOnClick: false,
-            maxWidth: "none",
+            // Keep popups within the phone viewport accounting for page padding
+            maxWidth: "min(420px, calc(100vw - 4rem))",
             offset: 15
           })
             .setLngLat(coordinates)
@@ -335,13 +361,13 @@ export default function PinDataFetcher({ pinJsonUrl, mapRef, messageEndpoint }) 
             />
           );
 
-          popupRootsRef.current.set(popup, root);
+          rootsMap.set(popup, root);
 
           popup.on("close", () => {
-            const root = popupRootsRef.current.get(popup);
+            const root = rootsMap.get(popup);
             if (root) {
               root.unmount();
-              popupRootsRef.current.delete(popup);
+              rootsMap.delete(popup);
             }
           });
         });
@@ -370,10 +396,10 @@ export default function PinDataFetcher({ pinJsonUrl, mapRef, messageEndpoint }) 
       if (map.getLayer(layerId)) map.removeLayer(layerId);
       if (map.getSource(sourceId)) map.removeSource(sourceId);
       
-      popupRootsRef.current.forEach((root) => root.unmount());
-      popupRootsRef.current.clear();
+      rootsMap.forEach((root) => root.unmount());
+      rootsMap.clear();
     };
-  }, [pinData, mapRef]);
+  }, [pinData, mapRef, handleSendMessage]);
 
   if (!pinJsonUrl) {
     return null;

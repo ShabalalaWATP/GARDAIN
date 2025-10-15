@@ -37,19 +37,31 @@ export default function MapLibreMap({
   geoJsonUrl,
   mapRef: externalMapRef,
 }) {
-
   const mapContainerRef = useRef(null);
-  const mapRef = externalMapRef || useRef(null);
+  const internalMapRef = useRef(null);
+  const mapRef = externalMapRef ?? internalMapRef;
 
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
+    const resolvedColorScheme =
+      typeof colorScheme === "string" && colorScheme.toLowerCase() === "dark" ? "Dark" : "Light";
+    const resolvedStyleName = encodeURIComponent(styleName);
+
     // Initialises the map
     const map = new maplibregl.Map({
       container: mapContainerRef.current,
-      style: `https://maps.geo.${region}.amazonaws.com/v2/styles/${styleName}/descriptor?key=${apiKey}&color-scheme=${colorScheme}`,
+      style: `https://maps.geo.${region}.amazonaws.com/v2/styles/${resolvedStyleName}/descriptor?key=${apiKey}&color-scheme=${resolvedColorScheme}`,
       center,
       zoom,
+    });
+
+    map.on("error", (event) => {
+      if (event?.error?.message?.includes("Expected value to be of type number")) {
+        console.debug("MapLibre suppressed non-fatal error:", event.error?.message);
+        return;
+      }
+      console.error("MapLibre error:", event.error || event);
     });
 
     map.on("load", () => {
@@ -82,7 +94,7 @@ export default function MapLibreMap({
       }
       map.remove();
     };
-  }, [apiKey, region, styleName, colorScheme, center, zoom]);
+  }, [apiKey, region, styleName, colorScheme, center, zoom, mapRef]);
 
 
   //Fetches GeoJSON, draws polygons

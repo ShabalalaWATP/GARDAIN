@@ -39,18 +39,29 @@ export default function PhotoIntel({ endpoint = DEFAULT_ENDPOINT, photoUrl = DEF
   }, [endpoint]);
 
   const flood = useMemo(() => {
-    // Expecting DynamoDB JSON shape like:
-    // { Items: [ { labels: { M: { Flood: { S: "100.0%" }, ... } } } ] }
-    try {
-      const first = data?.Items?.[0];
-      const labels = first?.labels?.M || {};
-      // case-insensitive key find for 'Flood'
-      const key = Object.keys(labels).find((k) => k.toLowerCase() === "flood");
-      const conf = key ? labels[key]?.S : undefined;
-      return conf || null;
-    } catch {
-      return null;
-    }
+    // API returns DynamoDB JSON: each item has labels.M.{ Label: { S: "confidence" } }
+    const items = Array.isArray(data?.Items) ? data.Items : [];
+    let bestValue = null;
+    let bestScore = -Infinity;
+
+    items.forEach((item) => {
+      const labels = item?.labels?.M;
+      if (!labels) return;
+      const entryKey = Object.keys(labels).find((k) => k.toLowerCase() === "flood");
+      if (!entryKey) return;
+
+      const rawValue = labels[entryKey]?.S;
+      if (typeof rawValue !== "string") return;
+
+      const numeric = parseFloat(rawValue.replace(/[^0-9.]+/g, ""));
+      const score = Number.isFinite(numeric) ? numeric : 0;
+      if (score > bestScore) {
+        bestScore = score;
+        bestValue = rawValue;
+      }
+    });
+
+    return bestValue;
   }, [data]);
 
   const body = useMemo(() => {
@@ -83,4 +94,3 @@ export default function PhotoIntel({ endpoint = DEFAULT_ENDPOINT, photoUrl = DEF
     </div>
   );
 }
-
