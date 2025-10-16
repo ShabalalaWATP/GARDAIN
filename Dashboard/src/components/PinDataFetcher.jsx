@@ -181,11 +181,19 @@ function InteractivePopup({ properties, onSendMessage }) {
   );
 }
 
-export default function PinDataFetcher({ pinJsonUrl, mapRef, messageEndpoint }) {
+export default function PinDataFetcher({
+  pinJsonUrl,
+  mapRef,
+  messageEndpoint,
+  onPinData,
+  onLoadingChange,
+  onPinError,
+}) {
   const [pinData, setPinData] = useState(null);
   const [pinError, setPinError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const popupRootsRef = useRef(new Map());
+  const hasFitToPinsRef = useRef(false);
 
   useEffect(() => {
     if (!pinJsonUrl) return;
@@ -202,6 +210,7 @@ export default function PinDataFetcher({ pinJsonUrl, mapRef, messageEndpoint }) 
           throw new Error(`Pin data failed to fetch: ${response.status}`);
         }
         const pinjson = await response.json();
+        hasFitToPinsRef.current = false;
         setPinData(pinjson);
         setPinError(null);
         setIsLoading(false);
@@ -220,6 +229,30 @@ export default function PinDataFetcher({ pinJsonUrl, mapRef, messageEndpoint }) 
       abortController.abort();
     };
   }, [pinJsonUrl]);
+
+  useEffect(() => {
+    if (typeof onPinData === "function") {
+      onPinData(pinData);
+    }
+  }, [pinData, onPinData]);
+
+  useEffect(() => {
+    if (typeof onLoadingChange === "function") {
+      onLoadingChange(isLoading);
+    }
+  }, [isLoading, onLoadingChange]);
+
+  useEffect(() => {
+    if (typeof onPinError === "function") {
+      onPinError(pinError);
+    }
+  }, [pinError, onPinError]);
+
+  useEffect(() => {
+    if (!pinData || pinData.length === 0) {
+      hasFitToPinsRef.current = false;
+    }
+  }, [pinData]);
 
   const handleSendMessage = useCallback(
     async (title, description, targetLatitude, targetLongitude) => {
@@ -301,8 +334,6 @@ export default function PinDataFetcher({ pinJsonUrl, mapRef, messageEndpoint }) 
           })
           .filter(Boolean);
 
-        console.log("Mapping pins to features", features);
-
         const geojson = {
           type: "FeatureCollection",
           features: features,
@@ -379,6 +410,43 @@ export default function PinDataFetcher({ pinJsonUrl, mapRef, messageEndpoint }) 
         map.on("mouseleave", layerId, () => {
           map.getCanvas().style.cursor = "";
         });
+
+        if (!hasFitToPinsRef.current && features.length > 0) {
+          const coordinates = features
+            .map((feature) => feature?.geometry?.coordinates)
+            .filter(
+              (coords) =>
+                Array.isArray(coords) &&
+                typeof coords[0] === "number" &&
+                typeof coords[1] === "number"
+            );
+
+          if (coordinates.length === 1) {
+            map.easeTo({
+              center: coordinates[0],
+              zoom: Math.max(map.getZoom() || 0, 12.5),
+              duration: 900,
+            });
+            hasFitToPinsRef.current = true;
+          } else if (coordinates.length > 1) {
+            let bounds = null;
+            coordinates.forEach((coord) => {
+              if (!bounds) {
+                bounds = new maplibregl.LngLatBounds(coord, coord);
+              } else {
+                bounds.extend(coord);
+              }
+            });
+            if (bounds) {
+              map.fitBounds(bounds, {
+                padding: 80,
+                maxZoom: 13,
+                duration: 900,
+              });
+              hasFitToPinsRef.current = true;
+            }
+          }
+        }
 
         console.log(`Added ${features.length} pins to the map`);
       } catch (error) {
