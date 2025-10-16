@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import fallbackHazardZones from "../assets/data/hazard_zones.json";
 
 // Helper function that figures out how far to zoom to show all data
 const computeBoundsFromGeoJson = (geojson) => {
@@ -100,7 +101,7 @@ export default function MapLibreMap({
   //Fetches GeoJSON, draws polygons
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !geoJsonUrl) return;
+    if (!map) return;
 
     const sourceId = "fake-s3-features";
     const polygonFillLayerId = `${sourceId}-polygon-fill`;
@@ -111,6 +112,68 @@ export default function MapLibreMap({
     let isEffectActive = true;
 
     // Fetches the GeoJSON file from the provided URL and updates the map
+    const cloneGeoJson = (data) => JSON.parse(JSON.stringify(data));
+
+    const applyGeoJsonToMap = (geojson) => {
+      const existingSource = map.getSource(sourceId);
+      if (existingSource && typeof existingSource.setData === "function") {
+        existingSource.setData(geojson);
+      } else {
+        if (map.getLayer(pointLayerId)) map.removeLayer(pointLayerId);
+        if (map.getLayer(polygonOutlineLayerId)) map.removeLayer(polygonOutlineLayerId);
+        if (map.getLayer(polygonFillLayerId)) map.removeLayer(polygonFillLayerId);
+        if (existingSource) map.removeSource(sourceId);
+
+        // Adds the raw GeoJSON file to the map as a data source.
+        map.addSource(sourceId, {
+          type: "geojson",
+          data: geojson,
+        });
+
+        map.addLayer({
+          id: polygonFillLayerId,
+          type: "fill",
+          source: sourceId,
+          filter: ["==", "$type", "Polygon"],
+          paint: {
+            "fill-color": ["coalesce", ["get", "color"], "#4F46E5"],
+            "fill-opacity": 0.3,
+          },
+        });
+
+        map.addLayer({
+          id: polygonOutlineLayerId,
+          type: "line",
+          source: sourceId,
+          filter: ["==", "$type", "Polygon"],
+          paint: {
+            "line-color": "#312E81",
+            "line-width": 2,
+          },
+        });
+
+        map.addLayer({
+          id: pointLayerId,
+          type: "circle",
+          source: sourceId,
+          filter: ["==", "$type", "Point"],
+          paint: {
+            "circle-radius": 6,
+            "circle-color": ["coalesce", ["get", "color"], "#DC2626"],
+            "circle-stroke-color": "#FFFFFF",
+            "circle-stroke-width": 2,
+          },
+        });
+      }
+
+      map.resize();
+
+      const bounds = computeBoundsFromGeoJson(geojson);
+      if (bounds) {
+        map.fitBounds(bounds, { padding: 40, maxZoom: 13, duration: 800 });
+      }
+    };
+
     const addGeoJsonToMap = async () => {
       if (!isEffectActive) {
         return;
@@ -123,76 +186,57 @@ export default function MapLibreMap({
       const abortController = new AbortController();
       currentAbortController = abortController;
 
-      try {
+      let geojson = null;
+      let usedFallback = false;
+
+      const loadFromRemote = async () => {
+        if (!geoJsonUrl) {
+          return null;
+        }
+
         const response = await fetch(geoJsonUrl, {
+          mode: "cors",
           signal: abortController.signal,
         });
         if (!response.ok) {
           throw new Error(`GeoJSON fetch failed: ${response.status} ${response.statusText}`);
         }
-        const geojson = await response.json();
+        return response.json();
+      };
 
-        const existingSource = map.getSource(sourceId);
-        if (existingSource && typeof existingSource.setData === "function") {
-          existingSource.setData(geojson);
-        } else {
-          if (map.getLayer(pointLayerId)) map.removeLayer(pointLayerId);
-          if (map.getLayer(polygonOutlineLayerId)) map.removeLayer(polygonOutlineLayerId);
-          if (map.getLayer(polygonFillLayerId)) map.removeLayer(polygonFillLayerId);
-          if (existingSource) map.removeSource(sourceId);
-
-          // Adds the raw GeoJSON file to the map as a data source.
-          map.addSource(sourceId, {
-            type: "geojson",
-            data: geojson,
-          });
-
-          map.addLayer({
-            id: polygonFillLayerId,
-            type: "fill",
-            source: sourceId,
-            filter: ["==", "$type", "Polygon"],
-            paint: {
-              "fill-color": ["coalesce", ["get", "color"], "#4F46E5"],
-              "fill-opacity": 0.3,
-            },
-          });
-
-          map.addLayer({
-            id: polygonOutlineLayerId,
-            type: "line",
-            source: sourceId,
-            filter: ["==", "$type", "Polygon"],
-            paint: {
-              "line-color": "#312E81",
-              "line-width": 2,
-            },
-          });
-
-          map.addLayer({
-            id: pointLayerId,
-            type: "circle",
-            source: sourceId,
-            filter: ["==", "$type", "Point"],
-            paint: {
-              "circle-radius": 6,
-              "circle-color": ["coalesce", ["get", "color"], "#DC2626"],
-              "circle-stroke-color": "#FFFFFF",
-              "circle-stroke-width": 2,
-            },
-          });
-        }
-
-        map.resize();
-
-        const bounds = computeBoundsFromGeoJson(geojson);
-        if (bounds) {
-          map.fitBounds(bounds, { padding: 40, maxZoom: 13, duration: 800 });
-        }
+      try {
+        geojson = await loadFromRemote();
       } catch (error) {
-        if (error.name !== "AbortError") {
-          console.error("Failed to load GeoJSON data:", error);
+        if (error.name === "AbortError") {
+          return;
         }
+
+        console.warn(
+          "Remote GeoJSON failed to load – falling back to embedded hazard zones dataset.",
+          error
+        );
+        geojson = cloneGeoJson(fallbackHazardZones);
+        usedFallback = true;
+      }
+
+      if (!geojson) {
+        geojson = cloneGeoJson(fallbackHazardZones);
+        usedFallback = true;
+      }
+
+      if (!geojson) {
+        console.error("MapLibreMap could not load any GeoJSON data for geofenced segments.");
+        return;
+      }
+
+      if (!isEffectActive) {
+        return;
+      }
+
+      applyGeoJsonToMap(geojson);
+
+      if (usedFallback) {
+        console.info("MapLibreMap is rendering geofence polygons from the embedded fallback dataset.");
       }
     };
 
