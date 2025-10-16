@@ -79,20 +79,71 @@ export default function WeatherInfo({
   const [forecast, setForecast] = useState(null); // 5-day/3-hour payload
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [autoLocation, setAutoLocation] = useState(null); // { lat, lon, name? }
+  const [autoLocationStatus, setAutoLocationStatus] = useState("idle"); // idle | resolving | resolved | failed | unsupported | skipped
+
+  useEffect(() => {
+    if (latOverride != null && lonOverride != null) {
+      setAutoLocation(null);
+      setAutoLocationStatus("skipped");
+      return;
+    }
+
+    if (typeof window === "undefined" || typeof navigator === "undefined" || !navigator.geolocation) {
+      setAutoLocationStatus("unsupported");
+      return;
+    }
+
+    let cancelled = false;
+    setAutoLocationStatus("resolving");
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        if (cancelled) return;
+        const { latitude, longitude } = position.coords;
+        setAutoLocation({ lat: latitude, lon: longitude });
+        setAutoLocationStatus("resolved");
+      },
+      (geoError) => {
+        if (cancelled) return;
+        console.warn("Geolocation unavailable, falling back to preset location", geoError);
+        setAutoLocation(null);
+        setAutoLocationStatus("failed");
+      },
+      {
+        maximumAge: 5 * 60 * 1000,
+        timeout: 8000,
+        enableHighAccuracy: false,
+      }
+    );
+
+    return () => {
+      cancelled = true;
+    };
+  }, [latOverride, lonOverride]);
 
   useEffect(() => {
     let abort = false;
     async function run() {
-      setLoading(true);
-      setError(null);
+      const hasOverrides = latOverride != null && lonOverride != null;
 
       try {
-        let lat = latOverride;
-        let lon = lonOverride;
-        let displayName = null;
+        let lat = hasOverrides ? latOverride : autoLocation?.lat;
+        let lon = hasOverrides ? lonOverride : autoLocation?.lon;
+        let displayName = hasOverrides ? null : autoLocation?.name;
 
         if (!(lat && lon)) {
+          if (
+            !hasOverrides &&
+            (autoLocationStatus === "idle" || autoLocationStatus === "resolving")
+          ) {
+            setLoading(true);
+            setError(null);
+            return;
+          }
+
           if (!apiKey) throw new Error("Missing VITE_OPENWEATHER_API_KEY");
+
           const key = `owm:geocode:${placeQuery}`;
           const cached = readCache(key, GEOCODE_TTL_MS);
           let gc = cached;
@@ -111,7 +162,37 @@ export default function WeatherInfo({
           lat = gc.lat;
           lon = gc.lon;
           displayName = gc.name;
+        } else if (!hasOverrides && !displayName && autoLocationStatus === "resolved") {
+          if (!apiKey) throw new Error("Missing VITE_OPENWEATHER_API_KEY");
+
+          const revKey = `owm:reverse:${lat},${lon}`;
+          let rev = readCache(revKey, GEOCODE_TTL_MS);
+          if (!rev) {
+            try {
+              const url = `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${apiKey}`;
+              const res = await fetch(url);
+              if (!res.ok) throw new Error(`Reverse geocoding failed (${res.status})`);
+              const arr = await res.json();
+              if (Array.isArray(arr) && arr.length > 0) {
+                const g = arr[0];
+                rev = {
+                  name: `${g.name}${g.state ? ", " + g.state : ""}, ${g.country}`,
+                };
+                writeCache(revKey, rev);
+              }
+            } catch (revError) {
+              console.warn("Reverse geocoding failed, using generic label", revError);
+            }
+          }
+
+          displayName = rev?.name || "Current location";
+          if (!abort && displayName && !autoLocation?.name) {
+            setAutoLocation((prev) => (prev ? { ...prev, name: displayName } : prev));
+          }
         }
+
+        setLoading(true);
+        setError(null);
 
         setGeo({ lat, lon, name: displayName || placeQuery });
 
@@ -152,7 +233,17 @@ export default function WeatherInfo({
     return () => {
       abort = true;
     };
-  }, [placeQuery, latOverride, lonOverride, units, lang, apiKey]);
+  }, [
+    placeQuery,
+    latOverride,
+    lonOverride,
+    units,
+    lang,
+    apiKey,
+    autoLocation?.lat,
+    autoLocation?.lon,
+    autoLocationStatus,
+  ]);
 
   const tzShift = useMemo(() => {
     // Prefer forecast city timezone, then current.weather timezone
@@ -290,4 +381,3 @@ export default function WeatherInfo({
     </div>
   );
 }
-

@@ -193,7 +193,7 @@ function App() {
             <span className="refresh-indicator__copy">90s auto-refresh</span>
           </span>
           <span className="footnote-text">
-            Data refreshes automatically as new JDP field reports arrive.
+            Data refreshes automatically as new requests for assistance from the general public arrive.
           </span>
         </div>
       </section>
@@ -219,8 +219,6 @@ function App() {
         </div>
         <WeatherInfo
           placeQuery="De Vere Cotswold Water Park, Cirencester, GB"
-          lat={51.671305633027536}
-          lon={-1.898614152826156}
           units="metric"
         />
       </section>

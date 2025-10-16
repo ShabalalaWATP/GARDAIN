@@ -95,7 +95,7 @@ Add your API key to `.env`:
 VITE_OPENWEATHER_API_KEY=YOUR_KEY_HERE
 ```
 
-By default, the component requests weather for “De Vere Cotswold Water Park, Cirencester, GB”. You can override the place or provide `lat`/`lon` props if you have precise coordinates. Results are cached in `localStorage` briefly to reduce API calls.
+By default, the component asks the browser for permission to use the viewer's current location and renders weather for those coordinates. If geolocation is denied or unavailable it automatically falls back to "De Vere Cotswold Water Park, Cirencester, GB". You can still override the place or provide `lat`/`lon` props when you need to pin the panel to a fixed site. Results are cached in `localStorage` briefly to reduce API calls.
 
 Security note: with Vite, any `VITE_` variable is exposed to the browser. For production, proxy these requests via a backend/serverless function to avoid exposing your key directly.
 
