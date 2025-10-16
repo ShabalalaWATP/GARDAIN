@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import MapLibreMap from './components/MapLibreMap';
 import PinDataFetcher from './components/PinDataFetcher';
 import topRightLogo from './assets/logos/GARDIAN.jpg';
@@ -7,6 +7,7 @@ import ukMilLogo from './assets/logos/UKMilLogo.jpg';
 import NewsFeed from './components/NewsFeed';
 import WeatherInfo from './components/WeatherInfo';
 import PhotoIntel from './components/PhotoIntel';
+import EvacuationRequests from './components/EvacuationRequests';
 import './App.css';
 
 function App() {
@@ -137,6 +138,29 @@ function App() {
   
   const pinJsonUrl = "https://ksip4rkha0.execute-api.eu-west-2.amazonaws.com/entitled-persons";
   const mapRef = useRef(null);
+  const defaultMapCenter = useMemo(() => [-1.9085, 51.6719], []);
+  const defaultMapZoom = 12.5;
+  const [evacRequests, setEvacRequests] = useState([]);
+  const [evacRequestsLoading, setEvacRequestsLoading] = useState(false);
+  const [evacRequestsError, setEvacRequestsError] = useState(null);
+
+  const handlePinDataUpdate = useCallback((data) => {
+    setEvacRequests(Array.isArray(data) ? data : []);
+  }, []);
+
+  const handlePinLoadingChange = useCallback((nextLoading) => {
+    setEvacRequestsLoading(Boolean(nextLoading));
+  }, []);
+
+  const handlePinErrorChange = useCallback((message) => {
+    setEvacRequestsError(message || null);
+  }, []);
+
+  const requestsBadgeLabel = evacRequestsLoading
+    ? "Updating"
+    : evacRequestsError
+    ? "Data issue"
+    : `${evacRequests.length} tracked`;
 
   const handleExportDashboard = () => {
     window.print();
@@ -151,10 +175,15 @@ function App() {
         geoJsonUrl={geoJsonUrl} 
         height="100%"
         mapRef={mapRef}
+        center={defaultMapCenter}
+        zoom={defaultMapZoom}
       />
       <PinDataFetcher 
         pinJsonUrl={pinJsonUrl}
         mapRef={mapRef}
+        onPinData={handlePinDataUpdate}
+        onLoadingChange={handlePinLoadingChange}
+        onPinError={handlePinErrorChange}
       />
         </div>
         <div className="map-footnote">
@@ -199,13 +228,13 @@ function App() {
       <section className="requests-panel">
         <div className="requests-header">
           <h2>Evacuation & Assistance Requests</h2>
-          <span className="requests-badge">Queue Placeholder</span>
+          <span className="requests-badge">{requestsBadgeLabel}</span>
         </div>
-        <p className="requests-copy">
-          This area will surface outstanding evacuation requests, humanitarian assistance calls,
-          and priority NEO support tickets from allied teams. Integrate the live feed here when the
-          data service comes online.
-        </p>
+        <EvacuationRequests
+          items={evacRequests}
+          isLoading={evacRequestsLoading}
+          error={evacRequestsError}
+        />
       </section>
 
       <section className="contacts-panel">
