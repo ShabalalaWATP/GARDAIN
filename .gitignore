@@ -1,3 +1,13 @@
 node_modules/
 .env
 .vite/
+
+# build + deps
+node_modules/
+dist/
+
+
+# local files
+.env
+.DS_Store
+
