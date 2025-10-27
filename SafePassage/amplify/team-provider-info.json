@@ -1,0 +1,26 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-safepassage-dev-85334-authRole",
+      "UnauthRoleArn": "arn:aws:iam::443381847522:role/amplify-safepassage-dev-85334-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::443381847522:role/amplify-safepassage-dev-85334-authRole",
+      "Region": "eu-west-2",
+      "DeploymentBucketName": "amplify-safepassage-dev-85334-deployment",
+      "UnauthRoleName": "amplify-safepassage-dev-85334-unauthRole",
+      "StackName": "amplify-safepassage-dev-85334",
+      "StackId": "arn:aws:cloudformation:eu-west-2:443381847522:stack/amplify-safepassage-dev-85334/e77b5290-a39c-11f0-81e3-0a87db22ea11",
+      "AmplifyAppId": "d1yzpk78ziftf2"
+    },
+    "categories": {
+      "auth": {
+        "safepassage9e47cc53": {}
+      },
+      "api": {
+        "safepassage": {}
+      },
+      "storage": {
+        "image": {}
+      }
+    }
+  }
+}
